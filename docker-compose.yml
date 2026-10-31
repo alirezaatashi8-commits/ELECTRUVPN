@@ -1,0 +1,83 @@
+# docker compose up -d --build
+# Host networking is used because VPN inbounds listen on arbitrary ports chosen in the panel.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: electruvpn-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-electruvpn}
+      # Use: openssl rand -hex 24  (no spaces/quotes/\ — DSN is key=value)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-electruvpn}
+      # Faster checkpoint / connection readiness for panel + agent bursts
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    command:
+      - postgres
+      - -c
+      - max_connections=50
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - effective_cache_size=768MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - wal_buffers=8MB
+      - -c
+      - checkpoint_completion_target=0.9
+      - -c
+      - random_page_cost=1.1
+      - -c
+      - log_min_duration_statement=1000
+    volumes:
+      - electruvpn-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-electruvpn} -d $${POSTGRES_DB:-electruvpn}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    ports:
+      - "127.0.0.1:5432:5432"
+    # Raise shared memory for parallel queries under load
+    shm_size: 192mb
+
+  electruvpn:
+    build: .
+    image: electruvpn:latest
+    container_name: electruvpn
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - electruvpn-data:/data
+    environment:
+      ELECTRU_PANEL_PORT: "2087"
+      # Same credentials as postgres. Password: openssl rand -hex 24 (no special chars in DSN).
+      POSTGRES_USER: ${POSTGRES_USER:-electruvpn}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-electruvpn}
+      ELECTRU_DB_DSN: "host=127.0.0.1 user=${POSTGRES_USER:-electruvpn} password=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env} dbname=${POSTGRES_DB:-electruvpn} port=5432 sslmode=disable TimeZone=UTC"
+      ELECTRU_DB_MAX_OPEN: "10"
+      ELECTRU_DB_MAX_IDLE: "3"
+      ELECTRU_DB_CONN_MAX_LIFETIME_MIN: "30"
+      # ELECTRU_PUBLIC_HOST: "vpn.example.com"
+      # ELECTRU_JWT_SECRET: ""  # required in production; entrypoint may auto-generate
+      # ELECTRU_CONFIG_ENCRYPTION_KEY: ""  # openssl rand -hex 32
+
+volumes:
+  electruvpn-data:
+  electruvpn-pgdata:

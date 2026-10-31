@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ELECTRUVPN BETA1 · پورتال کاربری</title>
+<script src="/assets/vendor/tailwind.js"></script>
+<script>window.tailwind=window.tailwind||{};</script>
+<style>
+:root{--bg:#070b14;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.1);--txt:#e8eefc;--mut:#8b9bb8;--acc:#38bdf8;--ok:#4ade80}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1rem}
+.btn{border:0;border-radius:.75rem;padding:.7rem 1rem;font-weight:600;cursor:pointer}
+.btn-p{background:var(--acc);color:#041018}.btn-g{background:rgba(255,255,255,.08);color:var(--txt)}
+.field{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:.75rem;padding:.75rem;color:var(--txt)}
+.muted{color:var(--mut);font-size:.8rem}
+.tab{opacity:.65;padding:.35rem .7rem;border-radius:999px;font-size:.75rem;cursor:pointer}
+.tab.on{opacity:1;background:rgba(56,189,248,.2)}
+code,pre{font-family:ui-monospace,monospace}
+</style>
+</head>
+<body>
+<div id="loginView" class="max-w-md mx-auto px-4 py-12">
+  <div class="text-center mb-8">
+    <div class="text-2xl font-bold mb-1">ELECTRUVPN BETA1</div>
+    <div class="muted">پورتال وب کاربری — بدون نیاز به تلگرام</div>
+  </div>
+  <div class="card p-5 space-y-3">
+    <label class="text-sm">Sub ID (توکن اشتراک)</label>
+    <input id="subIn" class="field" dir="ltr" placeholder="از لینک ساب یا ربات کپی کنید"/>
+    <button class="btn btn-p w-full" onclick="doLogin()">ورود</button>
+    <p class="muted text-center text-xs leading-relaxed">اگر از ربات لینک «ورود وب» گرفته‌اید، همین صفحه با توکن خودکار باز می‌شود. Sub ID همان بخش بعد از <code>/sub/</code> در لینک اشتراک است.</p>
+    <div id="loginErr" class="text-red-400 text-xs text-center"></div>
+  </div>
+</div>
+
+<div id="appView" class="hidden max-w-lg mx-auto px-4 py-6 pb-16">
+  <div class="flex justify-between items-center mb-4">
+    <div>
+      <div class="font-bold">پورتال من</div>
+      <div class="muted text-xs" id="who">—</div>
+    </div>
+    <button class="btn btn-g text-xs" onclick="doLogout()">خروج</button>
+  </div>
+  <div class="flex gap-1 flex-wrap mb-4" id="tabs">
+    <span class="tab on" data-t="home" onclick="tab('home')">وضعیت</span>
+    <span class="tab" data-t="cfg" onclick="tab('cfg')">کانفیگ</span>
+    <span class="tab" data-t="shop" onclick="tab('shop')">تمدید</span>
+    <span class="tab" data-t="gift" onclick="tab('gift')">هدیه</span>
+  </div>
+
+  <section id="v-home">
+    <div class="card p-4 mb-3 space-y-2 text-sm">
+      <div class="flex justify-between"><span class="muted">وضعیت</span><b id="stEnable">—</b></div>
+      <div class="flex justify-between"><span class="muted">نام</span><b id="stName">—</b></div>
+      <div class="flex justify-between"><span class="muted">حجم</span><b id="stTraffic">—</b></div>
+      <div class="flex justify-between"><span class="muted">انقضا</span><b id="stExp">—</b></div>
+      <div class="flex justify-between"><span class="muted">اینباند</span><b id="stInb">—</b></div>
+    </div>
+  </section>
+
+  <section id="v-cfg" class="hidden">
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">لینک اشتراک</div>
+      <div class="field text-xs break-all mb-2" id="subUrl" dir="ltr">—</div>
+      <button class="btn btn-p w-full mb-3" onclick="copy('subUrl')">کپی لینک ساب</button>
+      <div class="text-sm font-semibold mb-2">کانفیگ / Share</div>
+      <div class="field text-xs break-all mb-2 max-h-40 overflow-auto" id="shareLink" dir="ltr">—</div>
+      <button class="btn btn-g w-full" onclick="copy('shareLink')">کپی کانفیگ</button>
+    </div>
+  </section>
+
+  <section id="v-shop" class="hidden">
+    <div class="card p-4 mb-3">
+      <p class="muted text-xs mb-3">برای پرداخت کارت‌به‌کارت از ربات تلگرام یا مینی‌اپ استفاده کنید. اینجا پلن‌ها و اطلاعات کارت نمایش داده می‌شود.</p>
+      <div id="planList" class="space-y-2 text-sm"></div>
+      <div class="mt-3 muted text-xs" id="payInfo"></div>
+    </div>
+  </section>
+
+  <section id="v-gift" class="hidden">
+    <div class="card p-4">
+      <div class="text-sm font-semibold mb-2">فعال‌سازی کارت هدیه</div>
+      <input id="giftIn" class="field mb-2" dir="ltr" placeholder="EVG-XXXX-XXXXXX"/>
+      <button class="btn btn-p w-full" onclick="redeemGift()">فعال کردن</button>
+      <div class="muted text-xs mt-2" id="giftMsg"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const TOKEN_KEY='ev_portal_jwt';
+let TOKEN=sessionStorage.getItem(TOKEN_KEY)||'';
+
+async function api(path, opts={}){
+  const headers={'Content-Type':'application/json', ...(opts.headers||{})};
+  if(TOKEN) headers['Authorization']='Bearer '+TOKEN;
+  const r=await fetch('/api/portal'+path,{...opts,headers,credentials:'include'});
+  const t=await r.text();
+  try{return JSON.parse(t)}catch(e){return{success:false,msg:t||('HTTP '+r.status)}}
+}
+
+function human(n){n=Number(n)||0;if(n<1024)return n+' B';const u=['KB','MB','GB','TB'];let i=-1,f=n;while(f>=1024&&i<u.length-1){f/=1024;i++}return f.toFixed(1)+' '+u[i]}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+async function doLogin(subId){
+  const sid=subId||document.getElementById('subIn').value.trim();
+  const q=new URLSearchParams(location.search);
+  const body={};
+  if(q.get('token')) body.token=q.get('token');
+  else body.subId=sid;
+  const d=await api('/login',{method:'POST',body:JSON.stringify(body)});
+  if(!d.success){document.getElementById('loginErr').textContent=d.msg||'خطا';return}
+  TOKEN=d.obj.token; sessionStorage.setItem(TOKEN_KEY,TOKEN);
+  if(q.get('token')) history.replaceState({},'',location.pathname);
+  showApp(); await loadDash();
+}
+
+async function doLogout(){
+  await api('/logout',{method:'POST',body:'{}'});
+  TOKEN=''; sessionStorage.removeItem(TOKEN_KEY);
+  document.getElementById('appView').classList.add('hidden');
+  document.getElementById('loginView').classList.remove('hidden');
+}
+
+function showApp(){
+  document.getElementById('loginView').classList.add('hidden');
+  document.getElementById('appView').classList.remove('hidden');
+}
+
+function tab(name){
+  ['home','cfg','shop','gift'].forEach(t=>{
+    const el=document.getElementById('v-'+t);
+    if(el) el.classList.toggle('hidden', t!==name);
+  });
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.t===name));
+  if(name==='shop') loadPlans();
+}
+
+async function loadDash(){
+  const d=await api('/dashboard');
+  if(!d.success){ doLogout(); return }
+  const o=d.obj||{};
+  document.getElementById('who').textContent=o.email||o.subId||'';
+  document.getElementById('stEnable').textContent=o.enable?'فعال':'غیرفعال';
+  document.getElementById('stName').textContent=o.name||'—';
+  const lim=o.limitBytes||0, used=o.usedBytes||0;
+  document.getElementById('stTraffic').textContent=lim? (human(used)+' / '+human(lim)) : (human(used)+' / ∞');
+  document.getElementById('stExp').textContent=o.expiryTime? new Date(o.expiryTime).toLocaleString('fa-IR'):'∞';
+  document.getElementById('stInb').textContent=o.inbound||'—';
+  document.getElementById('subUrl').textContent=o.subUrl||('sub/'+o.subId);
+  document.getElementById('shareLink').textContent=o.shareLink||'—';
+}
+
+async function loadPlans(){
+  const d=await api('/plans');
+  const box=document.getElementById('planList');
+  if(!d.success){box.textContent='خطا';return}
+  const o=d.obj||{};
+  box.innerHTML=(o.plans||[]).map(p=>`<div class="card p-3 flex justify-between"><div><b>${esc(p.name)}</b><div class="muted text-xs">${p.totalGB||'∞'}GB · ${p.durationDays}روز</div></div><b>${Number(p.priceToman).toLocaleString('fa-IR')} ت</b></div>`).join('')||'<div class="muted">پلنی نیست</div>';
+  document.getElementById('payInfo').textContent=o.shopEnabled
+    ? ('کارت: '+(o.cardNumber||'—')+' · '+(o.cardHolder||'')+' — خرید کامل از ربات تلگرام')
+    : 'فروشگاه غیرفعال است';
+}
+
+async function redeemGift(){
+  const code=document.getElementById('giftIn').value.trim();
+  const d=await api('/gifts/redeem',{method:'POST',body:JSON.stringify({code})});
+  document.getElementById('giftMsg').textContent=d.success?(d.obj.message||'OK'):(d.msg||'خطا');
+  if(d.success){ if(d.obj.token){TOKEN=d.obj.token;sessionStorage.setItem(TOKEN_KEY,TOKEN)} loadDash(); }
+}
+
+function copy(id){
+  const t=document.getElementById(id).textContent;
+  navigator.clipboard?.writeText(t);
+  alert('کپی شد');
+}
+
+(async function boot(){
+  const q=new URLSearchParams(location.search);
+  if(q.get('token')){ await doLogin(); return }
+  if(TOKEN){ showApp(); const d=await api('/dashboard'); if(d.success) await loadDash(); else doLogout(); }
+})();
+</script>
+</body>
+</html>

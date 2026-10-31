@@ -1,0 +1,10 @@
+[electruvpn-auth]
+enabled = true
+filter = electruvpn-auth
+backend = systemd
+journalmatch = _SYSTEMD_UNIT=electruvpn.service
+maxretry = 10
+findtime = 10m
+bantime = 1h
+port = 2087
+action = ufw

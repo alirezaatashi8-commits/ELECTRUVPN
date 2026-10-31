@@ -1,0 +1,29 @@
+[Unit]
+Description=ELECTRUVPN BETA Panel
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/electruvpn
+EnvironmentFile=/etc/electruvpn/electruvpn.env
+# Gin release mode: no debug route dump / debug-mode overhead in production.
+Environment=GIN_MODE=release
+ExecStart=/opt/electruvpn/electruvpn-server
+Restart=on-failure
+RestartSec=3
+# Needed to bind low ports (e.g. 443) and for xray-core to manage sockets.
+AmbientCapabilities=CAP_NET_BIND_SERVICE CAP_NET_ADMIN CAP_NET_RAW
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+UMask=0077
+# High-concurrency headroom: limits are inherited by the xray/sing-box child
+# processes, and TasksMax counts every thread of the whole unit cgroup.
+LimitNOFILE=1048576
+TasksMax=16384
+ReadWritePaths=/etc/electruvpn
+
+[Install]
+WantedBy=multi-user.target

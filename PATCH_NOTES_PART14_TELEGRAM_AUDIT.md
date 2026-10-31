@@ -1,0 +1,9 @@
+# Part 14 — Bug audit, section 3: Telegram bots & shop
+- **Panel crash from a single update:** neither bot recovered from panics; a malformed update/callback killed the whole panel process and was re-delivered after restart. Every update now runs under `safeHandle` (logs the panic and continues).
+- **Paid orders could not be approved:** starting a new purchase (plan, wallet top-up, custom GB) cancelled the user's earlier order even when its receipt was already `pending_review`; the admin then got "وضعیت سفارش قابل تأیید نیست: cancelled". Only `pending_payment` orders are cancelled now. Receipt upload updates only the receipt columns and only while the order is still open.
+- **Double charge:** `DebitAndFulfill` debited the wallet before checking the (already approved) order, so a second payment on the same order was charged again. The order is now locked and checked first.
+- **Admin bot authorization:** access was granted if *either* the sender or the chat ID was an admin. Registering a group ID as admin gave every member of the group admin powers. Only the sender is checked now.
+- **Gift orders** could be approved twice (two cards for one payment); approval is now an atomic claim.
+- **409 Conflict handling** re-created the client and reset the getUpdates offset to 0, replaying already-handled updates (duplicate orders/receipts). The client (and offset) is kept.
+- **Messages:** text was cut at 4000 *bytes* (Persian ≈ 2000 chars) and could end inside an HTML tag, which made Telegram reject the entire message. Now cut by characters at a safe boundary; on "can't parse entities" the message is resent as plain text; ticket subjects are HTML-escaped; one bounded retry on HTTP 429.
+- **Shop/trial clients:** Shadowsocks-2022 inbounds got a UUID password (invalid → xray refuses the whole config); now a correctly sized key. WireGuard inbounds are rejected with a clear message (shop/trial cannot provision per-client keys).

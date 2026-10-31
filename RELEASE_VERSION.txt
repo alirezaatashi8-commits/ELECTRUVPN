@@ -1,0 +1,1 @@
+ELECTRUVPN BETA1.21 — Interactive remote install (IP/domain wizard) + ufw auto-disable after install/update (2026-10-30)

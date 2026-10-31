@@ -1,0 +1,6529 @@
+openapi: 3.0.3
+info:
+  title: ELECTRUVPN BETA1 API
+  version: BETA1
+  description: Provider-neutral management API for ELECTRUVPN BETA1. The deployed router uses /api and /api/v1. The current
+    v3.5 Ultra, automation, operations and multi-node control-plane surface is exposed under /api/pro; no separate /api/v3.5
+    route prefix is registered.
+servers:
+- url: /api/v1
+  description: API-key scoped v1 API
+- url: /api
+  description: Authenticated panel/control-plane API; /pro is the current v3.5 surface
+paths:
+  /health:
+    get:
+      summary: Health status
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_health
+  /inbounds:
+    get:
+      summary: API operation GET /inbounds
+      tags:
+      - v1
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_inbounds
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /inbounds
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds
+      security:
+      - sessionCookie: []
+  /clients:
+    get:
+      summary: API operation GET /clients
+      tags:
+      - v1
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_clients
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /clients
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients
+      security:
+      - sessionCookie: []
+  /subscriptions:
+    get:
+      summary: List subscription metadata without bearer URLs or tokens
+      parameters:
+      - name: clientId
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_subscriptions
+      security:
+      - bearerAuth: []
+  /subscriptions/{id}:
+    get:
+      summary: Get subscription metadata without exposing its bearer token
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_subscriptions_id
+      security:
+      - bearerAuth: []
+  /subscriptions/{id}/devices:
+    get:
+      summary: API operation GET /subscriptions/id/devices
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_subscriptions_id_devices
+      security:
+      - bearerAuth: []
+  /restart:
+    post:
+      summary: Regenerate and restart proxy services
+      responses:
+        '200':
+          description: OK
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_restart
+      security:
+      - bearerAuth: []
+  /logout:
+    post:
+      summary: API operation POST /logout
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_logout
+      security:
+      - sessionCookie: []
+  /sessions/revoke-all:
+    post:
+      summary: API operation POST /sessions/revoke-all
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_sessions_revoke_all
+      security:
+      - sessionCookie: []
+  /me:
+    get:
+      summary: API operation GET /me
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_me
+      security:
+      - sessionCookie: []
+  /change-password:
+    post:
+      summary: API operation POST /change-password
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_change_password
+      security:
+      - sessionCookie: []
+  /change-credentials:
+    post:
+      summary: API operation POST /change-credentials
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_change_credentials
+      security:
+      - sessionCookie: []
+  /panel/settings:
+    get:
+      summary: API operation GET /panel/settings
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_panel_settings
+      security:
+      - sessionCookie: []
+  /panel/settings/apply:
+    post:
+      summary: API operation POST /panel/settings/apply
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_panel_settings_apply
+      security:
+      - sessionCookie: []
+  /inbounds/search:
+    get:
+      summary: API operation GET /inbounds/search
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_search
+      security:
+      - sessionCookie: []
+  /inbounds/port-availability:
+    get:
+      summary: API operation GET /inbounds/port-availability
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_port_availability
+      security:
+      - sessionCookie: []
+  /inbounds/test-port:
+    post:
+      summary: API operation POST /inbounds/test-port
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_test_port
+      security:
+      - sessionCookie: []
+  /inbounds/validate-draft:
+    post:
+      summary: API operation POST /inbounds/validate-draft
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_validate_draft
+      security:
+      - sessionCookie: []
+  /inbounds/reality-keypair:
+    get:
+      summary: API operation GET /inbounds/reality-keypair
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_reality_keypair
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/status:
+    get:
+      summary: API operation GET /inbounds/id/status
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_status
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/clients:
+    get:
+      summary: API operation GET /inbounds/id/clients
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_clients
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/live:
+    get:
+      summary: API operation GET /inbounds/id/live
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_live
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/preview:
+    get:
+      summary: API operation GET /inbounds/id/preview
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_preview
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/revisions:
+    get:
+      summary: API operation GET /inbounds/id/revisions
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_revisions
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/rollback:
+    post:
+      summary: API operation POST /inbounds/id/rollback
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_rollback
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/reset-traffic:
+    post:
+      summary: API operation POST /inbounds/id/reset-traffic
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_reset_traffic
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/clone:
+    post:
+      summary: API operation POST /inbounds/id/clone
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_clone
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/analytics:
+    get:
+      summary: API operation GET /inbounds/id/analytics
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_analytics
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/health:
+    get:
+      summary: API operation GET /inbounds/id/health
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_health
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/export:
+    get:
+      summary: API operation GET /inbounds/id/export
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_inbounds_id_export
+      security:
+      - sessionCookie: []
+  /inbounds/import:
+    post:
+      summary: API operation POST /inbounds/import
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_import
+      security:
+      - sessionCookie: []
+  /inbounds/import-3x-ui:
+    post:
+      summary: Import compatible inbound/client configuration from a 3x-ui database backup or Xray JSON
+      tags:
+      - api
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Import completed; skipped records are included in the response object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Unsupported or invalid backup format, or no compatible records
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_import_3x_ui
+      security:
+      - sessionCookie: []
+  /inbounds/bulk:
+    post:
+      summary: API operation POST /inbounds/bulk
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_bulk
+      security:
+      - sessionCookie: []
+  /inbounds/mass-provision:
+    post:
+      summary: API operation POST /inbounds/mass-provision
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_mass_provision
+      security:
+      - sessionCookie: []
+  /inbounds/quick-grpc:
+    post:
+      summary: Create a ready-to-use VLESS gRPC client with quota and expiry
+      description: Creates one VLESS+gRPC+REALITY inbound and one client. Port 0 chooses a free random high port. Traffic
+        0 means unlimited and days 0 means no expiry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+                  maxLength: 128
+                clientName:
+                  type: string
+                  maxLength: 128
+                totalGB:
+                  type: integer
+                  minimum: 0
+                days:
+                  type: integer
+                  minimum: 0
+                  maximum: 3650
+                port:
+                  type: integer
+                  minimum: 0
+                  maximum: 65535
+                  description: 0 selects a free random port
+                ipMode:
+                  type: string
+                  enum:
+                  - ipv4
+                  - ipv6
+                  - dual
+                addressType:
+                  type: string
+                  enum:
+                  - ipv4
+                  - ipv6
+                  - domain
+                  - all
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Invalid input
+        '409':
+          description: Requested port or name is unavailable
+        '503':
+          description: No free port available
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_inbounds_quick_grpc
+      security:
+      - sessionCookie: []
+  /inbounds/quick-websocket:
+    post:
+      summary: Create a ready-to-use VLESS WebSocket client with quota and expiry
+      description: Creates one VLESS+WebSocket inbound and one client. Uses a valid managed TLS certificate when available;
+        in strict security mode creation is refused without one. Port 0 chooses a free random port.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+                  maxLength: 128
+                clientName:
+                  type: string
+                  maxLength: 128
+                totalGB:
+                  type: integer
+                  minimum: 0
+                days:
+                  type: integer
+                  minimum: 0
+                  maximum: 3650
+                port:
+                  type: integer
+                  minimum: 0
+                  maximum: 65535
+                ipMode:
+                  type: string
+                  enum:
+                  - ipv4
+                  - ipv6
+                  - dual
+                addressType:
+                  type: string
+                  enum:
+                  - ipv4
+                  - ipv6
+                  - domain
+                  - all
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Invalid input
+        '409':
+          description: Requested port or name is unavailable
+        '412':
+          description: Strict mode requires a usable TLS certificate
+        '503':
+          description: No free port available
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_inbounds_quick_websocket
+      security:
+      - sessionCookie: []
+  /inbounds/quick-httpupgrade:
+    post:
+      summary: Create a ready-to-use VLESS HTTPUpgrade client with quota and expiry
+      description: Creates one VLESS+HTTPUpgrade inbound and one client. Uses a valid managed TLS certificate when available;
+        in strict security mode creation is refused without one. Port 0 chooses a free random port.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+                  maxLength: 128
+                clientName:
+                  type: string
+                  maxLength: 128
+                totalGB:
+                  type: integer
+                  minimum: 0
+                days:
+                  type: integer
+                  minimum: 0
+                  maximum: 3650
+                port:
+                  type: integer
+                  minimum: 0
+                  maximum: 65535
+                ipMode:
+                  type: string
+                  enum:
+                  - ipv4
+                  - ipv6
+                  - dual
+                addressType:
+                  type: string
+                  enum:
+                  - ipv4
+                  - ipv6
+                  - domain
+                  - all
+      responses:
+        '200':
+          description: Created
+        '400':
+          description: Invalid input
+        '409':
+          description: Requested port or name is unavailable
+        '412':
+          description: Strict mode requires a usable TLS certificate
+        '503':
+          description: No free port available
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_inbounds_quick_httpupgrade
+      security:
+      - sessionCookie: []
+  /inbounds/quick-xhttp:
+    post:
+      summary: API operation POST /inbounds/quick-xhttp
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_quick_xhttp
+      security:
+      - sessionCookie: []
+  /inbounds/quick-vless-reality:
+    post:
+      summary: API operation POST /inbounds/quick-vless-reality
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_quick_vless_reality
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/update:
+    post:
+      summary: API operation POST /inbounds/id/update
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_update
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/delete:
+    post:
+      summary: API operation POST /inbounds/id/delete
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_delete
+      security:
+      - sessionCookie: []
+  /clients/bulk:
+    post:
+      summary: API operation POST /clients/bulk
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_bulk
+      security:
+      - sessionCookie: []
+  /clients/bulk-action:
+    post:
+      summary: API operation POST /clients/bulk-action
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_bulk_action
+      security:
+      - sessionCookie: []
+  /clients/{id}/update:
+    post:
+      summary: API operation POST /clients/id/update
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_update
+      security:
+      - sessionCookie: []
+  /clients/{id}/delete:
+    post:
+      summary: API operation POST /clients/id/delete
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_delete
+      security:
+      - sessionCookie: []
+  /clients/{id}/reset:
+    post:
+      summary: API operation POST /clients/id/reset
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_reset
+      security:
+      - sessionCookie: []
+  /clients/{id}/rotate-secret:
+    post:
+      summary: API operation POST /clients/id/rotate-secret
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_rotate_secret
+      security:
+      - sessionCookie: []
+  /clients/{id}/link:
+    get:
+      summary: API operation GET /clients/id/link
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_clients_id_link
+      security:
+      - sessionCookie: []
+  /clients/{id}/live:
+    get:
+      summary: API operation GET /clients/id/live
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_clients_id_live
+      security:
+      - sessionCookie: []
+  /clients/{id}/profiles:
+    get:
+      summary: API operation GET /clients/{id}/profiles
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_clients_id_profiles
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /clients/id/profiles
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_profiles
+      security:
+      - sessionCookie: []
+  /clients/{id}/profiles/{profileId}:
+    delete:
+      summary: API operation DELETE /clients/id/profiles/profileId
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      - name: profileId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_clients_id_profiles_profileId
+      security:
+      - sessionCookie: []
+  /clients/{id}/doctor:
+    post:
+      summary: API operation POST /clients/id/doctor
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_doctor
+      security:
+      - sessionCookie: []
+  /dashboard/overview:
+    get:
+      summary: API operation GET /dashboard/overview
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_dashboard_overview
+      security:
+      - sessionCookie: []
+  /dashboard/xray-logs:
+    get:
+      summary: API operation GET /dashboard/xray-logs
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_dashboard_xray_logs
+      security:
+      - sessionCookie: []
+  /dashboard/xray/{action}:
+    post:
+      summary: API operation POST /dashboard/xray/action
+      tags:
+      - api
+      parameters:
+      - name: action
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_dashboard_xray_action
+      security:
+      - sessionCookie: []
+  /dashboard/sync-traffic:
+    post:
+      summary: API operation POST /dashboard/sync-traffic
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_dashboard_sync_traffic
+      security:
+      - sessionCookie: []
+  /dashboard/reset-all-traffic:
+    post:
+      summary: API operation POST /dashboard/reset-all-traffic
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_dashboard_reset_all_traffic
+      security:
+      - sessionCookie: []
+  /pro/system:
+    get:
+      summary: API operation GET /pro/system
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_system
+      security:
+      - sessionCookie: []
+  /pro/audit:
+    get:
+      summary: API operation GET /pro/audit
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_audit
+      security:
+      - sessionCookie: []
+  /pro/nodes:
+    get:
+      summary: API operation GET /pro/nodes
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_nodes
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/nodes
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_nodes
+      security:
+      - sessionCookie: []
+  /pro/nodes/{id}:
+    delete:
+      summary: API operation DELETE /pro/nodes/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_nodes_id
+      security:
+      - sessionCookie: []
+  /pro/api-keys:
+    get:
+      summary: API operation GET /pro/api-keys
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_api_keys
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/api-keys
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_api_keys
+      security:
+      - sessionCookie: []
+  /pro/api-keys/{id}:
+    delete:
+      summary: API operation DELETE /pro/api-keys/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_api_keys_id
+      security:
+      - sessionCookie: []
+  /pro/backups:
+    get:
+      summary: API operation GET /pro/backups
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_backups
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/backups
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_backups
+      security:
+      - sessionCookie: []
+  /pro/backups/{id}/download:
+    get:
+      summary: API operation GET /pro/backups/id/download
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_backups_id_download
+      security:
+      - sessionCookie: []
+  /pro/backups/{id}/restore:
+    post:
+      summary: API operation POST /pro/backups/id/restore
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_backups_id_restore
+      security:
+      - sessionCookie: []
+  /pro/backups/{id}:
+    delete:
+      summary: API operation DELETE /pro/backups/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_backups_id
+      security:
+      - sessionCookie: []
+  /pro/users:
+    post:
+      summary: API operation POST /pro/users
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_users
+      security:
+      - sessionCookie: []
+    get:
+      summary: API operation GET /pro/users
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_users
+      security:
+      - sessionCookie: []
+  /pro/users/{id}/role:
+    post:
+      summary: API operation POST /pro/users/id/role
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_users_id_role
+      security:
+      - sessionCookie: []
+  /pro/notifications/test:
+    post:
+      summary: API operation POST /pro/notifications/test
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_notifications_test
+      security:
+      - sessionCookie: []
+  /pro/devices:
+    get:
+      summary: List subscription devices
+      tags:
+      - subscriptions
+      responses:
+        '200':
+          description: Devices returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_devices
+      security:
+      - sessionCookie: []
+  /pro/devices/{id}:
+    delete:
+      summary: API operation DELETE /pro/devices/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_devices_id
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/devices/reset:
+    post:
+      summary: API operation POST /pro/clients/id/devices/reset
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_clients_id_devices_reset
+      security:
+      - sessionCookie: []
+  /pro/plans:
+    get:
+      summary: API operation GET /pro/plans
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_plans
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/plans
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_plans
+      security:
+      - sessionCookie: []
+  /pro/plans/{id}:
+    delete:
+      summary: API operation DELETE /pro/plans/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_plans_id
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/plan:
+    post:
+      summary: API operation POST /pro/clients/id/plan
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_clients_id_plan
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/subscription/rotate:
+    post:
+      summary: API operation POST /pro/clients/id/subscription/rotate
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_clients_id_subscription_rotate
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/analytics:
+    get:
+      summary: Get subscription analytics
+      tags:
+      - subscriptions
+      parameters:
+      - name: days
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 365
+        description: Number of days to analyze
+      responses:
+        '200':
+          description: Analytics returned
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_subscriptions_analytics
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/analytics/overview:
+    get:
+      summary: API operation GET /pro/subscriptions/analytics/overview
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_subscriptions_analytics_overview
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/access-log:
+    get:
+      summary: List subscription access log entries
+      tags:
+      - subscriptions
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+      - name: clientId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: addressType
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Access log returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_subscriptions_access_log
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/presets:
+    get:
+      summary: List enabled subscription presets
+      tags:
+      - subscriptions
+      responses:
+        '200':
+          description: Presets returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_subscriptions_presets
+      security:
+      - sessionCookie: []
+    post:
+      summary: Create a subscription preset
+      tags:
+      - subscriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 64
+                description:
+                  type: string
+                addressType:
+                  type: string
+                  enum:
+                  - all
+                  - ipv4
+                  - ipv6
+                  - domain
+                refreshMin:
+                  type: integer
+                  minimum: 1
+                  maximum: 1440
+                  default: 15
+                autoUpdate:
+                  type: boolean
+                smartEnabled:
+                  type: boolean
+                mobileGuide:
+                  type: boolean
+                qr:
+                  type: boolean
+                enabled:
+                  type: boolean
+                configJson:
+                  type: string
+                  maxLength: 65536
+      responses:
+        '200':
+          description: Preset created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Preset already exists or could not be created
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_subscriptions_presets
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/presets/{id}:
+    delete:
+      summary: API operation DELETE /pro/subscriptions/presets/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_subscriptions_presets_id
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/groups/{id}/rotate:
+    post:
+      summary: API operation POST /pro/subscriptions/groups/id/rotate
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_subscriptions_groups_id_rotate
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/groups/{id}/toggle:
+    post:
+      summary: API operation POST /pro/subscriptions/groups/id/toggle
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_subscriptions_groups_id_toggle
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/subscription/revoke:
+    post:
+      summary: Revoke a client subscription
+      tags:
+      - subscriptions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Subscription revoked
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_clients_id_subscription_revoke
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/subscription/enable:
+    post:
+      summary: Enable a client subscription
+      tags:
+      - subscriptions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Subscription enabled
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Client is expired or over quota
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_clients_id_subscription_enable
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/subscription/apply-preset:
+    post:
+      summary: API operation POST /pro/clients/id/subscription/apply-preset
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_clients_id_subscription_apply_preset
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/subscription/policy:
+    post:
+      summary: Update client subscription policy
+      tags:
+      - subscriptions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addressType:
+                  type: string
+                refreshMin:
+                  type: integer
+                  minimum: 1
+                  maximum: 1440
+                autoUpdate:
+                  type: boolean
+                smartEnabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Policy updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_clients_id_subscription_policy
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/subscription/renew:
+    post:
+      summary: Renew a client subscription
+      tags:
+      - subscriptions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Subscription renewed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Subscription cannot be renewed
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_clients_id_subscription_renew
+      security:
+      - sessionCookie: []
+  /pro/devices/{id}/approve:
+    post:
+      summary: Approve a subscription device
+      tags:
+      - subscriptions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Device approved
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_devices_id_approve
+      security:
+      - sessionCookie: []
+  /pro/devices/{id}/revoke:
+    post:
+      summary: Revoke a subscription device
+      tags:
+      - subscriptions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Device revoked
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_devices_id_revoke
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/groups:
+    get:
+      summary: API operation GET /pro/subscriptions/groups
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_subscriptions_groups
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/subscriptions/groups
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_subscriptions_groups
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/groups/{id}:
+    delete:
+      summary: API operation DELETE /pro/subscriptions/groups/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_subscriptions_groups_id
+      security:
+      - sessionCookie: []
+  /pro/subscriptions/clinic:
+    get:
+      summary: API operation GET /pro/subscriptions/clinic
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_subscriptions_clinic
+      security:
+      - sessionCookie: []
+  /pro/platform/summary:
+    get:
+      summary: API operation GET /pro/platform/summary
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_platform_summary
+      security:
+      - sessionCookie: []
+  /pro/enterprise/search:
+    get:
+      summary: API operation GET /pro/enterprise/search
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_enterprise_search
+      security:
+      - sessionCookie: []
+  /pro/enterprise/metrics:
+    get:
+      summary: API operation GET /pro/enterprise/metrics
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_enterprise_metrics
+      security:
+      - sessionCookie: []
+  /pro/enterprise/alerts:
+    get:
+      summary: API operation GET /pro/enterprise/alerts
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_enterprise_alerts
+      security:
+      - sessionCookie: []
+  /pro/automation/rules:
+    get:
+      summary: List automation rules
+      tags:
+      - automation
+      responses:
+        '200':
+          description: Rules returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_automation_rules
+      security:
+      - sessionCookie: []
+    post:
+      summary: Create an automation rule
+      tags:
+      - automation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutomationRuleInput'
+      responses:
+        '200':
+          description: Rule created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Rule could not be created
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_automation_rules
+      security:
+      - sessionCookie: []
+  /pro/automation/rules/{id}:
+    post:
+      summary: Update an automation rule
+      tags:
+      - automation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutomationRuleInput'
+      responses:
+        '200':
+          description: Rule updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Rule could not be updated
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_automation_rules_id
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      security:
+      - sessionCookie: []
+    delete:
+      summary: Delete an automation rule
+      tags:
+      - automation
+      responses:
+        '200':
+          description: Rule deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: delete_pro_automation_rules_id
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      security:
+      - sessionCookie: []
+  /pro/scheduler/tasks:
+    get:
+      summary: List scheduled tasks
+      tags:
+      - automation
+      responses:
+        '200':
+          description: Tasks returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_scheduler_tasks
+      security:
+      - sessionCookie: []
+    post:
+      summary: Create a scheduled task
+      tags:
+      - automation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduledTaskInput'
+      responses:
+        '200':
+          description: Task created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Task could not be created
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_scheduler_tasks
+      security:
+      - sessionCookie: []
+  /pro/scheduler/tasks/{id}:
+    post:
+      summary: Update a scheduled task
+      tags:
+      - automation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduledTaskInput'
+      responses:
+        '200':
+          description: Task updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Task could not be updated
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_scheduler_tasks_id
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      security:
+      - sessionCookie: []
+    delete:
+      summary: Delete a scheduled task
+      tags:
+      - automation
+      responses:
+        '200':
+          description: Task deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: delete_pro_scheduler_tasks_id
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      security:
+      - sessionCookie: []
+  /pro/scheduler/run-now:
+    post:
+      summary: Execute one scheduler pass immediately
+      tags:
+      - automation
+      responses:
+        '200':
+          description: Scheduler pass executed
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: post_pro_scheduler_run_now
+      security:
+      - sessionCookie: []
+  /pro/enterprise/alerts/refresh:
+    post:
+      summary: API operation POST /pro/enterprise/alerts/refresh
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_enterprise_alerts_refresh
+      security:
+      - sessionCookie: []
+  /pro/enterprise/alerts/{id}/resolve:
+    post:
+      summary: API operation POST /pro/enterprise/alerts/id/resolve
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_enterprise_alerts_id_resolve
+      security:
+      - sessionCookie: []
+  /pro/platform/security:
+    get:
+      summary: API operation GET /pro/platform/security
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_platform_security
+      security:
+      - sessionCookie: []
+  /pro/platform/jobs:
+    get:
+      summary: API operation GET /pro/platform/jobs
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_jobs
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/jobs
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_jobs
+      security:
+      - sessionCookie: []
+  /pro/platform/billing/plans:
+    get:
+      summary: API operation GET /pro/platform/billing/plans
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_billing_plans
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/billing/plans
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_billing_plans
+      security:
+      - sessionCookie: []
+  /pro/platform/billing/plans/{id}:
+    delete:
+      summary: API operation DELETE /pro/platform/billing/plans/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_platform_billing_plans_id
+      security:
+      - sessionCookie: []
+  /pro/platform/billing/orders:
+    get:
+      summary: API operation GET /pro/platform/billing/orders
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_billing_orders
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/billing/orders
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_billing_orders
+      security:
+      - sessionCookie: []
+  /pro/platform/billing/orders/{id}:
+    post:
+      summary: API operation POST /pro/platform/billing/orders/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_billing_orders_id
+      security:
+      - sessionCookie: []
+  /pro/platform/webhooks:
+    get:
+      summary: API operation GET /pro/platform/webhooks
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_webhooks
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/webhooks
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_webhooks
+      security:
+      - sessionCookie: []
+  /pro/platform/webhooks/{id}:
+    delete:
+      summary: API operation DELETE /pro/platform/webhooks/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_platform_webhooks_id
+      security:
+      - sessionCookie: []
+  /pro/platform/certificates:
+    get:
+      summary: API operation GET /pro/platform/certificates
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_certificates
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/certificates
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_certificates
+      security:
+      - sessionCookie: []
+  /pro/platform/certificates/{id}:
+    delete:
+      summary: API operation DELETE /pro/platform/certificates/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_platform_certificates_id
+      security:
+      - sessionCookie: []
+  /pro/platform/operations:
+    get:
+      summary: API operation GET /pro/platform/operations
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_operations
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/operations
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_operations
+      security:
+      - sessionCookie: []
+  /pro/platform/operations/{id}:
+    get:
+      summary: API operation GET /pro/platform/operations/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_platform_operations_id
+      security:
+      - sessionCookie: []
+  /pro/platform/operations/{id}/cancel:
+    post:
+      summary: API operation POST /pro/platform/operations/id/cancel
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_operations_id_cancel
+      security:
+      - sessionCookie: []
+  /pro/platform/node-groups:
+    get:
+      summary: API operation GET /pro/platform/node-groups
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_node_groups
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/node-groups
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_node_groups
+      security:
+      - sessionCookie: []
+  /pro/platform/node-groups/{id}/members:
+    post:
+      summary: API operation POST /pro/platform/node-groups/id/members
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_node_groups_id_members
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/{id}/drain:
+    post:
+      summary: API operation POST /pro/platform/nodes/id/drain
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_nodes_id_drain
+      security:
+      - sessionCookie: []
+  /pro/platform/certificate-history:
+    get:
+      summary: API operation GET /pro/platform/certificate-history
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_platform_certificate_history
+      security:
+      - sessionCookie: []
+  /pro/platform/domains:
+    get:
+      summary: API operation GET /pro/platform/domains
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_domains
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/domains
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_domains
+      security:
+      - sessionCookie: []
+  /pro/platform/domains/{id}/check:
+    post:
+      summary: API operation POST /pro/platform/domains/id/check
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_domains_id_check
+      security:
+      - sessionCookie: []
+  /pro/platform/domains/{id}/failover:
+    post:
+      summary: API operation POST /pro/platform/domains/id/failover
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_domains_id_failover
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/{id}/agent-diagnostics:
+    post:
+      summary: API operation POST /pro/platform/nodes/id/agent-diagnostics
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_nodes_id_agent_diagnostics
+      security:
+      - sessionCookie: []
+  /pro/platform/plugins:
+    get:
+      summary: API operation GET /pro/platform/plugins
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_platform_plugins
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/platform/plugins
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_plugins
+      security:
+      - sessionCookie: []
+  /pro/platform/plugins/{id}:
+    delete:
+      summary: API operation DELETE /pro/platform/plugins/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_platform_plugins_id
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/agent-token:
+    post:
+      summary: API operation POST /pro/platform/nodes/agent-token
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_nodes_agent_token
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/{id}/agent-token/rotate:
+    post:
+      summary: API operation POST /pro/platform/nodes/id/agent-token/rotate
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_nodes_id_agent_token_rotate
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/{id}/agent-enabled:
+    post:
+      summary: API operation POST /pro/platform/nodes/id/agent-enabled
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_nodes_id_agent_enabled
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/{id}/connection:
+    get:
+      summary: API operation GET /pro/platform/nodes/id/connection
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_platform_nodes_id_connection
+      security:
+      - sessionCookie: []
+  /pro/platform/nodes/{id}/deploy-config:
+    post:
+      summary: API operation POST /pro/platform/nodes/id/deploy-config
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_platform_nodes_id_deploy_config
+      security:
+      - sessionCookie: []
+  /pro/network/bbr:
+    get:
+      summary: API operation GET /pro/network/bbr
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_network_bbr
+      security:
+      - sessionCookie: []
+  /pro/network/bbr/test:
+    post:
+      summary: API operation POST /pro/network/bbr/test
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_network_bbr_test
+      security:
+      - sessionCookie: []
+  /pro/network/bbr/apply:
+    post:
+      summary: API operation POST /pro/network/bbr/apply
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_network_bbr_apply
+      security:
+      - sessionCookie: []
+  /pro/network/bbr/rollback:
+    post:
+      summary: API operation POST /pro/network/bbr/rollback
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_network_bbr_rollback
+      security:
+      - sessionCookie: []
+  /pro/control/performance:
+    get:
+      summary: API operation GET /pro/control/performance
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_control_performance
+      security:
+      - sessionCookie: []
+  /pro/control/performance/history:
+    get:
+      summary: API operation GET /pro/control/performance/history
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_control_performance_history
+      security:
+      - sessionCookie: []
+  /pro/control/routing:
+    get:
+      summary: API operation GET /pro/control/routing
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_control_routing
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/control/routing
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_control_routing
+      security:
+      - sessionCookie: []
+  /pro/control/routing/{id}:
+    delete:
+      summary: API operation DELETE /pro/control/routing/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_control_routing_id
+      security:
+      - sessionCookie: []
+  /pro/control/select-node:
+    get:
+      summary: API operation GET /pro/control/select-node
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_control_select_node
+      security:
+      - sessionCookie: []
+  /pro/control/advisor:
+    get:
+      summary: API operation GET /pro/control/advisor
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_control_advisor
+      security:
+      - sessionCookie: []
+  /pro/control/deployments:
+    get:
+      summary: API operation GET /pro/control/deployments
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_control_deployments
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/control/deployments
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_control_deployments
+      security:
+      - sessionCookie: []
+  /pro/control/deployments/{id}/rollback:
+    post:
+      summary: API operation POST /pro/control/deployments/id/rollback
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_control_deployments_id_rollback
+      security:
+      - sessionCookie: []
+  /pro/usage/snapshots:
+    get:
+      summary: API operation GET /pro/usage/snapshots
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_usage_snapshots
+      security:
+      - sessionCookie: []
+  /pro/clients/{id}/export:
+    get:
+      summary: API operation GET /pro/clients/id/export
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_clients_id_export
+      security:
+      - sessionCookie: []
+  /pro/ops/health:
+    get:
+      summary: API operation GET /pro/ops/health
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_health
+      security:
+      - sessionCookie: []
+  /pro/ops/command-center:
+    get:
+      summary: Get operations command-center status
+      tags:
+      - operations
+      responses:
+        '200':
+          description: Operations status returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_command_center
+      security:
+      - sessionCookie: []
+  /pro/ops/preflight:
+    get:
+      summary: Run deployment preflight checks
+      tags:
+      - operations
+      responses:
+        '200':
+          description: Preflight result returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_preflight
+      security:
+      - sessionCookie: []
+  /pro/ops/recovery:
+    get:
+      summary: Get recovery state
+      tags:
+      - operations
+      responses:
+        '200':
+          description: Recovery state returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_recovery
+      security:
+      - sessionCookie: []
+  /pro/ops/alerts:
+    get:
+      summary: API operation GET /pro/ops/alerts
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_alerts
+      security:
+      - sessionCookie: []
+  /pro/ops/system:
+    get:
+      summary: API operation GET /pro/ops/system
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_system
+      security:
+      - sessionCookie: []
+  /pro/ops/public-host:
+    get:
+      summary: Get detected and configured public host addresses
+      tags:
+      - operations
+      responses:
+        '200':
+          description: Public host status returned
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_public_host
+      security:
+      - sessionCookie: []
+  /pro/ops/public-host/domain:
+    post:
+      summary: Set the public VPN hostname
+      tags:
+      - operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [domain]
+              properties:
+                domain:
+                  type: string
+                  example: vpn.example.com
+      responses:
+        '200':
+          description: Public domain saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_public_host_domain
+      security:
+      - sessionCookie: []
+  /pro/ops/public-host/ipv4:
+    post:
+      summary: Manually set the public IPv4 endpoint
+      tags:
+      - operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ipv4]
+              properties:
+                ipv4:
+                  type: string
+                  format: ipv4
+                  example: 203.0.113.10
+      responses:
+        '200':
+          description: IPv4 saved and automatic detection disabled
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_public_host_ipv4
+      security:
+      - sessionCookie: []
+  /pro/ops/public-host/auto:
+    post:
+      summary: Enable or disable automatic public IP detection
+      tags:
+      - operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled]
+              properties:
+                enabled:
+                  type: boolean
+      responses:
+        '200':
+          description: Automatic public IP detection setting saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_public_host_auto
+      security:
+      - sessionCookie: []
+  /pro/ops/settings:
+    get:
+      summary: API operation GET /pro/ops/settings
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_settings
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/ops/settings
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_settings
+      security:
+      - sessionCookie: []
+  /pro/ops/templates:
+    get:
+      summary: API operation GET /pro/ops/templates
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_templates
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/ops/templates
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_templates
+      security:
+      - sessionCookie: []
+  /pro/ops/templates/{id}:
+    delete:
+      summary: API operation DELETE /pro/ops/templates/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_ops_templates_id
+      security:
+      - sessionCookie: []
+  /pro/ops/notifications:
+    get:
+      summary: API operation GET /pro/ops/notifications
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_notifications
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/ops/notifications
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_notifications
+      security:
+      - sessionCookie: []
+  /pro/ops/notifications/{id}:
+    delete:
+      summary: API operation DELETE /pro/ops/notifications/id
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_ops_notifications_id
+      security:
+      - sessionCookie: []
+  /pro/ops/diagnostics:
+    get:
+      summary: API operation GET /pro/ops/diagnostics
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_diagnostics
+      security:
+      - sessionCookie: []
+  /pro/ops/security-scan:
+    get:
+      summary: API operation GET /pro/ops/security-scan
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_security_scan
+      security:
+      - sessionCookie: []
+  /pro/ops/sessions:
+    get:
+      summary: API operation GET /pro/ops/sessions
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_sessions
+      security:
+      - sessionCookie: []
+  /pro/ops/sessions/{id}/revoke:
+    post:
+      summary: API operation POST /pro/ops/sessions/id/revoke
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_sessions_id_revoke
+      security:
+      - sessionCookie: []
+  /pro/ops/backups/{id}/verify:
+    post:
+      summary: API operation POST /pro/ops/backups/id/verify
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_backups_id_verify
+      security:
+      - sessionCookie: []
+  /pro/ops/database/{action}:
+    post:
+      summary: API operation POST /pro/ops/database/action
+      tags:
+      - api
+      parameters:
+      - name: action
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_database_action
+      security:
+      - sessionCookie: []
+  /pro/ops/runtime:
+    get:
+      summary: API operation GET /pro/ops/runtime
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_runtime
+      security:
+      - sessionCookie: []
+  /pro/ops/log-tail:
+    get:
+      summary: API operation GET /pro/ops/log-tail
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_log_tail
+      security:
+      - sessionCookie: []
+  /pro/ops/emergency:
+    get:
+      summary: API operation GET /pro/ops/emergency
+      tags:
+      - pro
+      responses:
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      operationId: get_pro_ops_emergency
+      security:
+      - sessionCookie: []
+    post:
+      summary: API operation POST /pro/ops/emergency
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_emergency
+      security:
+      - sessionCookie: []
+  /pro/ops/validate:
+    post:
+      summary: API operation POST /pro/ops/validate
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_validate
+      security:
+      - sessionCookie: []
+  /pro/ops/service/{action}:
+    post:
+      summary: API operation POST /pro/ops/service/action
+      tags:
+      - api
+      parameters:
+      - name: action
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_service_action
+      security:
+      - sessionCookie: []
+  /login:
+    post:
+      summary: Public API operation POST /login
+      operationId: post_public_login
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /sub/{subId}:
+    get:
+      summary: Public API operation GET /sub/{subId}
+      operationId: get_public_sub_subId
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      parameters:
+      - name: subId
+        in: path
+        required: true
+        schema:
+          type: string
+      servers:
+      - url: /
+        description: Public subscription endpoint
+  /sub-group/{token}:
+    get:
+      summary: Public API operation GET /sub-group/{token}
+      operationId: get_public_sub-group_token
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      servers:
+      - url: /
+        description: Public subscription endpoint
+  /sub/{subId}/device:
+    post:
+      summary: Public API operation POST /sub/{subId}/device
+      operationId: post_public_sub_subId_device
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      parameters:
+      - name: subId
+        in: path
+        required: true
+        schema:
+          type: string
+      servers:
+      - url: /
+        description: Public subscription endpoint
+  /agent/manifest:
+    get:
+      summary: Public API operation GET /agent/manifest
+      operationId: get_public_agent_manifest
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /agent/heartbeat:
+    post:
+      summary: Public API operation POST /agent/heartbeat
+      operationId: post_public_agent_heartbeat
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /agent/poll:
+    get:
+      summary: Public API operation GET /agent/poll
+      operationId: get_public_agent_poll
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /agent/job/{id}/result:
+    post:
+      summary: Public API operation POST /agent/job/{id}/result
+      operationId: post_public_agent_job_id_result
+      security: []
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      parameters:
+      - $ref: '#/components/parameters/ID'
+  /agent/traffic:
+    post:
+      summary: API operation POST /agent/traffic
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_agent_traffic
+      security:
+      - bearerAuth: []
+  /clients/{id}/profiles/bulk:
+    post:
+      summary: API operation POST /clients/{id}/profiles/bulk
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_profiles_bulk
+      security:
+      - bearerAuth: []
+  /inbounds/quick-anti-filter:
+    post:
+      summary: API operation POST /inbounds/quick-anti-filter
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_quick_anti_filter
+      security:
+      - bearerAuth: []
+  /inbounds/{id}/rotate-reality:
+    post:
+      summary: API operation POST /inbounds/{id}/rotate-reality
+      tags:
+      - api
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_rotate_reality
+      security:
+      - bearerAuth: []
+  /pro/admins:
+    get:
+      summary: API operation GET /pro/admins
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_admins
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/admins
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_admins
+      security:
+      - bearerAuth: []
+  /pro/admins/me/quota:
+    get:
+      summary: API operation GET /pro/admins/me/quota
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_admins_me_quota
+      security:
+      - bearerAuth: []
+  /pro/admins/{id}:
+    post:
+      summary: API operation POST /pro/admins/{id}
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_admins_id
+      security:
+      - bearerAuth: []
+  /pro/dns:
+    get:
+      summary: API operation GET /pro/dns
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_dns
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/dns
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_dns
+      security:
+      - bearerAuth: []
+  /pro/honeypot/settings:
+    post:
+      summary: API operation POST /pro/honeypot/settings
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_honeypot_settings
+      security:
+      - bearerAuth: []
+  /pro/honeypot/stats:
+    get:
+      summary: API operation GET /pro/honeypot/stats
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_honeypot_stats
+      security:
+      - bearerAuth: []
+  /pro/l7shield/stats:
+    get:
+      summary: API operation GET /pro/l7shield/stats
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_l7shield_stats
+      security:
+      - bearerAuth: []
+  /pro/l7shield/unblock:
+    post:
+      summary: API operation POST /pro/l7shield/unblock
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_l7shield_unblock
+      security:
+      - bearerAuth: []
+  /pro/obfuscation/apply:
+    post:
+      summary: API operation POST /pro/obfuscation/apply
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_obfuscation_apply
+      security:
+      - bearerAuth: []
+  /pro/obfuscation/dests:
+    get:
+      summary: API operation GET /pro/obfuscation/dests
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_obfuscation_dests
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/obfuscation/dests
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_obfuscation_dests
+      security:
+      - bearerAuth: []
+  /pro/obfuscation/dests/{id}:
+    delete:
+      summary: API operation DELETE /pro/obfuscation/dests/{id}
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_obfuscation_dests_id
+      security:
+      - bearerAuth: []
+  /pro/obfuscation/health:
+    post:
+      summary: API operation POST /pro/obfuscation/health
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_obfuscation_health
+      security:
+      - bearerAuth: []
+  /pro/ops/public-host:
+    get:
+      summary: API operation GET /pro/ops/public-host
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_ops_public_host
+      security:
+      - bearerAuth: []
+  /pro/ops/public-host/domain:
+    post:
+      summary: API operation POST /pro/ops/public-host/domain
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_ops_public_host_domain
+      security:
+      - bearerAuth: []
+  /pro/platform/node-selection:
+    get:
+      summary: API operation GET /pro/platform/node-selection
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_platform_node_selection
+      security:
+      - bearerAuth: []
+  /pro/shop/broadcast:
+    post:
+      summary: API operation POST /pro/shop/broadcast
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_broadcast
+      security:
+      - bearerAuth: []
+  /pro/shop/broadcast/history:
+    get:
+      summary: API operation GET /pro/shop/broadcast/history
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_broadcast_history
+      security:
+      - bearerAuth: []
+  /pro/shop/broadcast/preview:
+    get:
+      summary: API operation GET /pro/shop/broadcast/preview
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_broadcast_preview
+      security:
+      - bearerAuth: []
+  /pro/shop/custom-gb:
+    get:
+      summary: API operation GET /pro/shop/custom-gb
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_custom_gb
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/shop/custom-gb
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_custom_gb
+      security:
+      - bearerAuth: []
+  /pro/shop/orders:
+    get:
+      summary: API operation GET /pro/shop/orders
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_orders
+      security:
+      - bearerAuth: []
+  /pro/shop/orders/{id}/approve:
+    post:
+      summary: API operation POST /pro/shop/orders/{id}/approve
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_orders_id_approve
+      security:
+      - bearerAuth: []
+  /pro/shop/orders/{id}/reject:
+    post:
+      summary: API operation POST /pro/shop/orders/{id}/reject
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_orders_id_reject
+      security:
+      - bearerAuth: []
+  /pro/shop/plans:
+    get:
+      summary: API operation GET /pro/shop/plans
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_plans
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/shop/plans
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_plans
+      security:
+      - bearerAuth: []
+  /pro/shop/plans/{id}/delete:
+    post:
+      summary: API operation POST /pro/shop/plans/{id}/delete
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_plans_id_delete
+      security:
+      - bearerAuth: []
+  /pro/shop/referral:
+    get:
+      summary: API operation GET /pro/shop/referral
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_referral
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/shop/referral
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_referral
+      security:
+      - bearerAuth: []
+  /pro/shop/settings:
+    get:
+      summary: API operation GET /pro/shop/settings
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_settings
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/shop/settings
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_settings
+      security:
+      - bearerAuth: []
+  /pro/shop/trial:
+    get:
+      summary: API operation GET /pro/shop/trial
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_trial
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/shop/trial
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_trial
+      security:
+      - bearerAuth: []
+  /pro/shop/winback:
+    get:
+      summary: API operation GET /pro/shop/winback
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_shop_winback
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/shop/winback
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_shop_winback
+      security:
+      - bearerAuth: []
+  /pro/telegram/config:
+    get:
+      summary: API operation GET /pro/telegram/config
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_telegram_config
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/telegram/config
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_telegram_config
+      security:
+      - bearerAuth: []
+  /pro/telegram/test-admin:
+    post:
+      summary: API operation POST /pro/telegram/test-admin
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_telegram_test_admin
+      security:
+      - bearerAuth: []
+  /pro/telegram/test-user:
+    post:
+      summary: API operation POST /pro/telegram/test-user
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_telegram_test_user
+      security:
+      - bearerAuth: []
+  /pro/tickets:
+    get:
+      summary: API operation GET /pro/tickets
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_tickets
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/tickets
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_tickets
+      security:
+      - bearerAuth: []
+  /pro/tickets/{id}:
+    get:
+      summary: API operation GET /pro/tickets/{id}
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_tickets_id
+      security:
+      - bearerAuth: []
+  /pro/tickets/{id}/close:
+    post:
+      summary: API operation POST /pro/tickets/{id}/close
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_tickets_id_close
+      security:
+      - bearerAuth: []
+  /pro/tickets/{id}/reply:
+    post:
+      summary: API operation POST /pro/tickets/{id}/reply
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_tickets_id_reply
+      security:
+      - bearerAuth: []
+  /pro/tunnel-chain:
+    get:
+      summary: API operation GET /pro/tunnel-chain
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_tunnel_chain
+      security:
+      - bearerAuth: []
+    post:
+      summary: API operation POST /pro/tunnel-chain
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_tunnel_chain
+      security:
+      - bearerAuth: []
+  /pro/tunnel-chain/hops:
+    get:
+      summary: API operation GET /pro/tunnel-chain/hops
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_tunnel_chain_hops
+      security:
+      - bearerAuth: []
+  /pro/tunnel-chain/{id}:
+    delete:
+      summary: API operation DELETE /pro/tunnel-chain/{id}
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: delete_pro_tunnel_chain_id
+      security:
+      - bearerAuth: []
+  /pro/tunnel-chain/{id}/enabled:
+    post:
+      summary: API operation POST /pro/tunnel-chain/{id}/enabled
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_tunnel_chain_id_enabled
+      security:
+      - bearerAuth: []
+  /pro/tunnel-chain/{id}/rotate:
+    post:
+      summary: API operation POST /pro/tunnel-chain/{id}/rotate
+      tags:
+      - pro
+      parameters:
+      - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_tunnel_chain_id_rotate
+      security:
+      - bearerAuth: []
+  /clients/groups:
+    get:
+      summary: List client groups
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_clients_groups
+      security:
+      - sessionCookie: []
+  /clients/groups/rename:
+    post:
+      summary: Rename client group
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_groups_rename
+      security:
+      - sessionCookie: []
+  /inbounds/anti-dpi/bulk:
+    post:
+      summary: Apply anti-DPI profile to many inbounds
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_anti_dpi_bulk
+      security:
+      - sessionCookie: []
+  /inbounds/{id}/anti-dpi:
+    post:
+      summary: Apply anti-DPI profile to one inbound
+      tags:
+      - api
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_inbounds_id_anti_dpi
+      security:
+      - sessionCookie: []
+      parameters:
+      - $ref: '#/components/parameters/ID'
+  /pro/backups/upload:
+    post:
+      summary: Upload panel backup archive for restore
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_backups_upload
+      security:
+      - sessionCookie: []
+  /pro/finance/churn:
+    get:
+      summary: Finance churn metrics
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_churn
+      security:
+      - sessionCookie: []
+  /pro/finance/export-report:
+    get:
+      summary: Finance export report
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_export_report
+      security:
+      - sessionCookie: []
+  /pro/finance/export.csv:
+    get:
+      summary: Finance CSV export
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_export_csv
+      security:
+      - sessionCookie: []
+  /pro/finance/monthly-trend:
+    get:
+      summary: Finance monthly trend
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_monthly_trend
+      security:
+      - sessionCookie: []
+  /pro/finance/plan-sales:
+    get:
+      summary: Finance plan sales
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_plan_sales
+      security:
+      - sessionCookie: []
+  /pro/finance/summary:
+    get:
+      summary: Finance summary
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_summary
+      security:
+      - sessionCookie: []
+  /pro/finance/transactions:
+    get:
+      summary: Finance transactions
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_finance_transactions
+      security:
+      - sessionCookie: []
+  /pro/l7shield/blackhole:
+    get:
+      summary: L7 shield blackhole list
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_l7shield_blackhole
+      security:
+      - sessionCookie: []
+  /pro/l7shield/blackhole/ban:
+    post:
+      summary: L7 shield blackhole ban
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_l7shield_blackhole_ban
+      security:
+      - sessionCookie: []
+  /clients/{id}/devices:
+    get:
+      summary: API operation GET /clients/{id}/devices
+      tags:
+      - clients
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_clients_id_devices
+      security:
+      - sessionCookie: []
+
+  /clients/{id}/devices/revoke-all:
+    post:
+      summary: API operation POST /clients/{id}/devices/revoke-all
+      tags:
+      - clients
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_devices_revoke_all
+      security:
+      - sessionCookie: []
+
+  /clients/{id}/devices/{deviceId}/revoke:
+    post:
+      summary: API operation POST /clients/{id}/devices/{deviceId}/revoke
+      tags:
+      - clients
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_devices_deviceid_revoke
+      security:
+      - sessionCookie: []
+
+  /clients/{id}/kick:
+    post:
+      summary: API operation POST /clients/{id}/kick
+      tags:
+      - clients
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_clients_id_kick
+      security:
+      - sessionCookie: []
+
+  /online-users:
+    get:
+      summary: API operation GET /online-users
+      tags:
+      - clients
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_online_users
+      security:
+      - sessionCookie: []
+
+  /panel/update/apply:
+    post:
+      summary: API operation POST /panel/update/apply
+      tags:
+      - panel
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_panel_update_apply
+      security:
+      - sessionCookie: []
+
+  /panel/update/check:
+    get:
+      summary: API operation GET /panel/update/check
+      tags:
+      - panel
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_panel_update_check
+      security:
+      - sessionCookie: []
+
+  /panel/update/status:
+    get:
+      summary: API operation GET /panel/update/status
+      tags:
+      - panel
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_panel_update_status
+      security:
+      - sessionCookie: []
+
+  /pro/honeypot/ban:
+    post:
+      summary: API operation POST /pro/honeypot/ban
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_honeypot_ban
+      security:
+      - sessionCookie: []
+
+  /pro/honeypot/daily-report:
+    get:
+      summary: API operation GET /pro/honeypot/daily-report
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_honeypot_daily_report
+      security:
+      - sessionCookie: []
+
+  /pro/honeypot/unban/{ip}:
+    post:
+      summary: API operation POST /pro/honeypot/unban/{ip}
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_honeypot_unban_ip
+      security:
+      - sessionCookie: []
+
+  /pro/replay/client/{id}:
+    get:
+      summary: API operation GET /pro/replay/client/{id}
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_replay_client_id
+      security:
+      - sessionCookie: []
+
+  /pro/replay/client/{id}/note:
+    post:
+      summary: API operation POST /pro/replay/client/{id}/note
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: post_pro_replay_client_id_note
+      security:
+      - sessionCookie: []
+
+  /pro/replay/search:
+    get:
+      summary: API operation GET /pro/replay/search
+      tags:
+      - pro
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      operationId: get_pro_replay_search
+      security:
+      - sessionCookie: []
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        msg:
+          type: string
+    AutomationRuleInput:
+      type: object
+      required:
+      - name
+      - event
+      - action
+      properties:
+        name:
+          type: string
+          maxLength: 128
+        enabled:
+          type: boolean
+        event:
+          type: string
+          enum:
+          - node_health
+          - client_expiry
+          - certificate_expiry
+          - always
+        condition:
+          type: string
+          maxLength: 8192
+          description: JSON condition object
+        action:
+          type: string
+          enum:
+          - notify_telegram
+          - refresh_alerts
+          - cleanup_sessions
+          - snapshot_usage
+        payload:
+          type: string
+          maxLength: 16384
+          description: JSON action payload
+        cooldownSec:
+          type: integer
+          minimum: 1
+          maximum: 604800
+    ScheduledTaskInput:
+      type: object
+      required:
+      - name
+      - schedule
+      - kind
+      properties:
+        name:
+          type: string
+          maxLength: 128
+        enabled:
+          type: boolean
+        schedule:
+          type: string
+          example: '@every 5m'
+        kind:
+          type: string
+          enum:
+          - snapshot_usage
+          - cleanup_sessions
+        payload:
+          type: string
+          maxLength: 16384
+          description: JSON action payload
+  parameters:
+    ID:
+      name: id
+      in: path
+      required: true
+      description: Numeric resource identifier
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+  responses:
+    BadRequest:
+      description: Invalid request or validation failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Authentication required or credentials are invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Authenticated principal lacks the required role or scope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Unexpected server-side failure
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Request rate limit exceeded
+      headers:
+        Retry-After:
+          description: Seconds until the client should retry
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API-Key
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: electru_session
+      description: HttpOnly SameSite browser session cookie.
+security:
+- sessionCookie: []

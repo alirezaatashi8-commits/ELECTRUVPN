@@ -1,0 +1,12 @@
+[Unit]
+Description=Run ELECTRUVPN journal cleanup hourly
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+Persistent=true
+RandomizedDelaySec=5m
+Unit=electruvpn-log-vacuum.service
+
+[Install]
+WantedBy=timers.target

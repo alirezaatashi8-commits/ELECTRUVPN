@@ -1,0 +1,8 @@
+# Part 15 — Bug audit, section 4: Subscription & share links
+- **Shadowsocks-2022 inbounds could never start.** Xray's multi-user SS-2022 needs a server key (`password`) next to the per-client keys; the panel never created one (default method is 2022), so applying the inbound failed and Create rolled back. Now a server key is generated on create/update/import/3x-ui import (kept if valid), written into the Xray config, and share links carry `method:serverKey:userKey`. Legacy-method multi-user inbounds now send the per-client `method` Xray requires. An old inbound without a key gets a clear error instead of a cryptic Xray failure (open + save it once).
+- 3x-ui import: the SS server `password` was turned into a fake extra client; it is now kept as the server key.
+- **Share links:** VLESS links now include `encryption=none`; mKCP is exported as `type=kcp`; VMess+gRPC carries the service name (`path`, `type=gun`); VMess+TLS carries `sni`/`alpn` and no longer sends `tls:"none"/"reality"`; Hysteria2 carries `sni`.
+- **Subscription-Userinfo:** trial accounts (limited in MB via TrafficLimitBytes) were advertised as unlimited (`total=0`).
+- **Renew subscription** only changed the date: an auto-expired client stayed disabled and was never re-added to xray. It now re-enables (unless over quota) and applies to xray, rolling back on failure.
+- **Subscription policy** save reset every field that was not in the request (grace hours, session cap, leak threshold, renewal days, primary address) to 0/ipv4. Only the fields sent are changed now; an invalid address type returns 400.
+- Subscription group URL now sends `profile-update-interval`, `profile-title`, no-store and a text content type.

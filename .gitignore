@@ -1,0 +1,90 @@
+# ELECTRUVPN BETA1 — Go/Linux
+# Keep source code, go.mod/go.sum, deployment templates, docs, and .env.example.
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+secrets/
+private/
+credentials/
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+id_ecdsa
+
+# VPN/client configs may contain private keys or credentials.
+# Keep examples/templates under version control only after reviewing them.
+*.ovpn
+wg-*.conf
+wireguard-private*
+privatekey*
+server-private*
+client-private*
+
+# Go build/test artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+coverage.html
+*.prof
+/bin/
+/dist/
+/build/
+/tmp/
+
+# Local runtime data, databases, and backups
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.db-*
+*.dump
+*.dump.*
+*.bak
+*.backup
+*.backup.*
+backups/
+data/
+runtime/
+logs/
+*.log
+
+# Generated service configs (review if intentionally maintained as source)
+xray-config.json
+sing-box.json
+
+# Local caches and editor/OS files
+.cache/
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Frontend dependencies/build output (keep package.json and lockfiles)
+node_modules/
+web/node_modules/
+web/dist/
+coverage/
+
+# Go vendor is intentionally NOT ignored: include it if the project requires it.
+# /vendor/

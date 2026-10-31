@@ -1,0 +1,165 @@
+ELECTRUVPN BETA1.7 (2026-10-27)
+--------------------------------
+Language (FA / EN) — fixed
+- Real language switcher in sidebar footer and topbar (FA | EN).
+- Choice stored in localStorage (electru_lang) and applied on every boot.
+- dir=rtl for Persian, dir=ltr for English on <html> and <body>.
+- Sidebar sections and links use t() for both languages (not half-translated).
+- Online Users / Devices strings fully bilingual.
+- setLanguage() updates UI immediately without reload.
+
+Previous BETA1.6 features remain: Online users + Kick, client devices API, REALITY Generate fix, speed simple transports.
+
+ELECTRUVPN BETA1.6 (2026-10-27)
+--------------------------------
+1) Online Users + Kick
+- New panel tab "Online Users" (کاربران آنلاین) with live speeds from Xray StatsService samples.
+- Kick session (xray api rmu) without disabling the client.
+- Kick + disable to prevent reconnect until re-enabled.
+- Auto-refresh every 3 seconds optional.
+
+2) Device management (admin)
+- GET/POST under /api/clients/:id/devices and revoke endpoints in the main panel API (not only Pro/TMA).
+- Device list modal from Online Users row; revoke one or all.
+- limitIP on the client remains the policy source used at subscription fetch.
+
+3) Subscription / public host (existing ops tools highlighted)
+- Operations → public host: status, set domain, set IPv4, auto-detect public IP.
+- Previous IPv4 is retained so clients can still refresh subscription after IP change when dual links are emitted.
+- Prefer a stable subscription domain over raw IP for production.
+
+4) Persian UI
+- Default language fa with t() dictionary for nav + online/devices strings.
+- Body dir=rtl when uiLang=fa; switch via panel language setting when present.
+
+Also includes BETA1.5 REALITY Generate fix and BETA1.4 speed simple transports.
+
+ELECTRUVPN BETA1.4 (2026-10-27)
+--------------------------------
+Speed & simple encrypted inbounds
+- Quick / Simple gRPC, WebSocket and HTTPUpgrade presets are throughput-oriented:
+  REALITY (gRPC/XHTTP/TCP) or managed TLS (WS/HTTPUpgrade) with encryption always preferred.
+  Fragmentation and TCP masks are off by default so full bandwidth is available; enable them later from the inbound editor if DPI requires it.
+- Socket options enabled by default on simple presets: TCP Fast Open, TCP_NODELAY, TCP keepalive.
+- Light mux (concurrency 4) without padding to reduce overhead.
+- Server-side streamSettings now emit configured sockopt when present.
+- No artificial bandwidth / speed shaping in the generated Xray policy; only traffic quotas (GB) remain as before.
+
+Update & firewall
+- `electruvpn update /path/to/release.zip` (or HTTPS URL) still extracts to a temp dir, runs install.sh in UPDATE_MODE, and never requires you to manually unzip on the server.
+- UFW state is preserved on update: if UFW was inactive before the update it stays inactive; if it was active the rules are refreshed and it stays active. Fresh installs still enable UFW by default for security.
+- Existing inbounds and clients are never rewritten by these preset changes; only newly created simple configs receive the speed-oriented defaults.
+
+ELECTRUVPN BETA1 — consolidated update
+
+Inbound wizard
+- Keep the four-step Basic / Transport / Security / Review flow.
+- Validate each prior step before forward navigation and validate the generated draft server-side before creation.
+- Preserve mobile-safe scrolling and action areas.
+
+Client wizard
+- Add a dedicated Identity / Limits / Review flow instead of requiring all client fields inline.
+- Add validation for label, whole-GB quota, IP/device limit, and expiry days.
+- Convert expiry days to a Unix-millisecond expiry timestamp at submit time; 0 remains unlimited/no expiry.
+- Keep server-side quota, reseller billing, and inbound address-family checks authoritative.
+
+Network resilience and performance
+- No claim of DPI immunity or speed improvement is made without testing on the target server and access networks.
+- REALITY and transport settings should be validated against the installed Xray version.
+- Test changes one at a time and preserve a rollback path; do not enable fragmentation/mux/masking by default as a generic speed optimization.
+
+Validation
+- Run scripts/validate.sh and the relevant Go tests in an environment with the declared Go toolchain and dependencies available.
+- Browser-based mobile and real Xray runtime tests are still required before production deployment.
+
+
+Subscription IPv4 migration improvement
+- Refreshes detected public host before building subscription links, so successful refreshes use the current public IP when the configured host is an IP literal.
+- Rejects private, link-local, loopback and CGNAT addresses during auto-detection to avoid replacing a public endpoint with an internal/NAT address.
+- A subscription URL pinned to an old, unreachable IP cannot update itself; use a stable subscription domain or keep the old endpoint forwarding until clients refresh.
+
+
+Subscription/IP migration update (2026-10-26)
+- Fresh interactive installs now offer one Let's Encrypt certificate covering the panel domain and a distinct subscription domain. Both DNS names must point to this server and TCP/80 must be reachable for ACME HTTP-01 validation.
+- The stable subscription URL is stored separately from VPN endpoint IPs, so refreshing a subscription can fetch updated connection entries after an IPv4 change.
+- Automatic IP adaptation now preserves the immediately previous IPv4 and includes it as a separately labelled entry alongside the new IPv4 in IPv4 subscription results. The old entry only works if the old IP remains routed/reachable; apps may replace their imported list with the complete subscription result rather than append to their local list.
+- The Public Host panel now supports manual IPv4 override. Setting it disables automatic IP adaptation until the administrator explicitly re-enables automatic mode.
+- Direct panel access by IP remains available on the HTTPS listener, but a certificate issued for domain names will trigger a browser certificate-name warning when accessed by IP.
+- Certificate issuance and live DNS/reachability checks require a real server environment and were not run as part of this source build.
+
+Audit fixes (2026-10-26)
+- Added the public-host status, manual IPv4, and auto-detection operations to the checked-in OpenAPI contract; route-coverage self-test now passes.
+- Prevented the fresh-install wizard from configuring an HTTPS subscription URL before the requested Let's Encrypt certificate has actually been issued. If port 80 is not confirmed reachable, the installer no longer leaves behind a broken wizard-generated HTTPS URL.
+- Re-applied gofmt to the Go source tree and regenerated the release integrity manifest.
+
+2026-10-26 — Admin recovery and panel update fixes
+- Fixed `electruvpn resetpw` to use PostgreSQL when ELECTRU_DB_DSN is configured,
+  while retaining SQLite fallback support. This avoids the misleading missing
+  electruvpn.db error on normal PostgreSQL installations.
+- Fixed manual/update backups to create consistent database dumps for PostgreSQL
+  (pg_dump) and SQLite (sqlite3 .backup).
+- Added interactive `electruvpn update` and menu option 10 to install a release ZIP
+  or HTTPS release URL, with optional SHA-256 verification and a pre-update backup.
+- `install.sh` installs the updated management CLI on both fresh installs and upgrades.
+
+Post-audit fixes (2026-10-26):
+- Management CLI can recover local PostgreSQL connection details from the protected
+  /etc/electruvpn/.pg_password file when an older electruvpn.env has an empty DSN
+  and the SQLite fallback file is absent.
+- PostgreSQL password reset and manual backup use the recovered local connection.
+- The update workflow now catches a failed backup attempt and requires explicit
+  confirmation before continuing without a database backup in an interactive shell;
+  non-interactive updates stop safely instead of proceeding without a backup.
+
+Admin password recovery follow-up (2026-10-26)
+- Reset-password CLI now checks the live PostgreSQL users schema and only updates
+  optional password flags when those columns exist.
+- PostgreSQL errors are surfaced as actionable diagnostics with connection-password
+  redaction instead of being hidden behind a generic failure message.
+- If a configured local PostgreSQL DSN fails, the CLI retries the installer-managed
+  local database using /etc/electruvpn/.pg_password, and if successful repairs the
+  local DSN in the protected env file and restarts the panel service.
+- The local retry is restricted to a local DSN; remote databases are never silently
+  replaced by a local database target.
+
+
+3x-ui migration/import (ELECTRUVPN BETA1)
+- Added a separate Import 3x-ui DB action in the Inbounds screen.
+- Imports compatible inbound/client records from 3x-ui SQLite database files and restricted SQLite SQL dumps, plus PostgreSQL COPY/plain dumps and custom archives via pg_restore.
+- Imports compatible inbounds from standard Xray JSON configuration files.
+- Reports unsupported protocols, invalid configurations and port conflicts; imported records are removed if applying the generated runtime configuration fails.
+- This is a schema-aware configuration migration, not a wholesale database replacement: 3x-ui account, bot, certificate and panel settings are not copied into ElectruVPN.
+- Validation performed in this build: JavaScript syntax check passed. Full Go tests and live Xray/3x-ui backup migration tests require the pinned Go 1.27.1 toolchain and a real target server, which were unavailable in the build environment.
+
+
+BETA1.3 UI corrections (2026-10-27)
+- Moved client creation controls directly below the quick config creation options in the top “Create Config” dropdown, ahead of Anti-Filter and Anti-DPI entries; controls remain scoped to each selected inbound and are no longer placed in the inbound/client table.
+- Constrained the create dropdown to the viewport with its own scroll area on mobile.
+- Applied the same vertically centered mobile modal layout and subtle rotating full-spectrum RGB border to both inbound Live and client Live windows.
+- Added cache-busting query versions to the main CSS and JS assets so an old browser cache is less likely to hide updated UI.
+- Frontend source checks performed; visual validation on the user's live mobile browser remains outstanding.
+
+ELECTRUVPN BETA1.5 (2026-10-27)
+--------------------------------
+REALITY key Generate in panel
+- /inbounds/reality-keypair now accepts modern Xray output formats:
+  PrivateKey / Password, PrivateKey / PublicKey, and legacy Private key / Public key.
+- Pure-Go X25519 fallback (crypto/ecdh) when the xray binary is missing or returns an unexpected format, so the Generate button always fills Private key, Public key and Short ID.
+- Quick Simple gRPC / REALITY create and Rotate keys use the same robust generator.
+- Frontend shows clearer errors if generation still fails.
+
+
+ELECTRUVPN BETA1.19 (2026-10-28)
+--------------------------------
+Multi-node traffic accounting — FIXED
+- Replaced incorrect "max absolute across nodes" merge with true per-node delta accounting.
+- New persistent table node_client_traffics stores last-seen absolute counters per (node_id, email).
+- Only positive deltas (or full value after Xray counter reset on that node) are added to Client.Up/Down.
+- First sample from a node establishes baseline only (no historical billing).
+- Dead-letter queue and in-memory bus retained for resilience.
+- AutoMigrate includes the new model (SQLite + PostgreSQL).
+- This is the correct traffic separation (تفکیک ترافیک) for multi-node deployments.
+
+BETA1.21 (2026-10-30)
+- remote-install.sh: runs install.sh interactively via /dev/tty (domain / IP / skip certificate wizard) instead of forcing -y. Falls back to -y only when no terminal exists or ELECTRU_NONINTERACTIVE=1.
+- install.sh: new --no-confirm flag; ufw is disabled after every install and update (ELECTRU_KEEP_UFW=1 restores the old behaviour).

@@ -1,0 +1,9 @@
+[electruvpn-honeypot]
+enabled = true
+filter = electruvpn-honeypot
+backend = systemd
+journalmatch = _SYSTEMD_UNIT=electruvpn.service
+maxretry = 1
+findtime = 1h
+bantime = 24h
+action = ufw

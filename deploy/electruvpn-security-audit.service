@@ -1,0 +1,17 @@
+[Unit]
+Description=ELECTRUVPN daily security and privacy regression audit
+After=network-online.target electruvpn.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/electruvpn
+EnvironmentFile=-/etc/electruvpn/electruvpn.env
+ExecStart=/bin/bash -c '/opt/electruvpn/security-selftest.sh && /opt/electruvpn/privacy-regression-test.sh && /opt/electruvpn/deep-audit-v35.sh'
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadOnlyPaths=/opt/electruvpn
+ReadOnlyPaths=/etc/electruvpn

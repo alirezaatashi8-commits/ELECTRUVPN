@@ -1,0 +1,4 @@
+[Definition]
+# ELECTRUVPN honeypot: match ban events from JSON slog
+failregex = ^.*"msg":"honeypot auto-ban".*"ip":"<HOST>".*$
+ignoreregex =

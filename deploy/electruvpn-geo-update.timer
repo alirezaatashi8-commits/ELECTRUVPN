@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly ELECTRUVPN geo data update
+
+[Timer]
+OnCalendar=weekly
+RandomizedDelaySec=2h
+Persistent=true
+Unit=electruvpn-geo-update.service
+
+[Install]
+WantedBy=timers.target
