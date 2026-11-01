@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>ELECTRUVPN BETA1 · Admin</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="/assets/vendor/tailwind.js"></script>
+<script>window.tailwind=window.tailwind||{};</script>
+<style>
+  :root{
+    --bg:#070a12;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.09);
+    --txt:#eef2ff;--mut:#94a3b8;--acc:#8b5cf6;--acc2:#22d3ee;
+    --ok:#34d399;--warn:#fbbf24;--bad:#fb7185
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:"Vazirmatn",system-ui,-apple-system,sans-serif;color:var(--txt);min-height:100vh;
+    background:radial-gradient(800px 360px at 100% -10%,rgba(139,92,246,.2),transparent 55%),
+      radial-gradient(600px 300px at -10% 30%,rgba(34,211,238,.1),transparent 50%),var(--bg)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(12px)}
+  .btn{border-radius:14px;padding:.7rem 1rem;font-weight:700;font-size:.85rem;border:0;cursor:pointer}
+  .btn-p{background:linear-gradient(135deg,#8b5cf6,#6366f1 55%,#22d3ee);color:#fff;box-shadow:0 10px 28px rgba(99,102,241,.3)}
+  .btn-g{background:rgba(255,255,255,.07);color:var(--txt);border:1px solid var(--line)}
+  .tab{padding:.45rem .8rem;border-radius:999px;font-size:.72rem;font-weight:600;color:var(--mut);background:rgba(255,255,255,.04);border:0;cursor:pointer}
+  .tab.on{background:linear-gradient(135deg,rgba(139,92,246,.9),rgba(34,211,238,.7));color:#fff;box-shadow:0 6px 16px rgba(139,92,246,.28)}
+  .stat{padding:1rem}
+  .stat .v{font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
+  .stat .l{font-size:.7rem;color:var(--mut);margin-top:.2rem}
+  .row{display:flex;justify-content:space-between;gap:.75rem;padding:.7rem .85rem;border-bottom:1px solid var(--line);font-size:.8rem}
+  .row:last-child{border-bottom:0}
+  .pill{font-size:.65rem;padding:.18rem .5rem;border-radius:999px;font-weight:700}
+  .ok{background:rgba(52,211,153,.15);color:var(--ok)}
+  .warn{background:rgba(251,191,36,.15);color:var(--warn)}
+  .bad{background:rgba(251,113,133,.15);color:var(--bad)}
+  .muted{color:var(--mut)}
+  .loader{text-align:center;padding:2rem;color:var(--mut)}
+  #gate,#app{min-height:100vh}
+  .nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(7,10,18,.88);border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div id="gate" class="p-6 flex flex-col items-center justify-center" style="min-height:100vh">
+  <div class="text-lg font-bold mb-2" style="letter-spacing:-.02em">ELECTRUVPN <span style="color:#a78bfa">BETA1</span> Admin</div>
+  <div class="text-xs muted mb-4 text-center" id="gateMsg">در حال احراز هویت تلگرام…</div>
+  <button class="btn btn-p" onclick="boot()" id="gateBtn" style="display:none">تلاش مجدد</button>
+</div>
+
+<div id="app" class="hidden pb-8">
+  <div class="nav px-4 py-3">
+    <div class="flex items-center justify-between mb-2">
+      <div>
+        <div class="font-bold text-sm">پنل مدیریت</div>
+        <div class="text-[10px] muted" id="who">—</div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-g text-xs py-1" onclick="refresh()">↻</button>
+        <a class="btn btn-g text-xs py-1" id="fullPanel" href="/" target="_blank">پنل کامل</a>
+      </div>
+    </div>
+    <div class="flex gap-1 flex-wrap" id="tabs">
+      <button class="tab on" data-t="home" onclick="tab('home')">نمای کلی</button>
+      <button class="tab" data-t="orders" onclick="tab('orders')">سفارش‌ها</button>
+      <button class="tab" data-t="clients" onclick="tab('clients')">کلاینت‌ها</button>
+      <button class="tab" data-t="nodes" onclick="tab('nodes')">نودها</button>
+      <button class="tab" data-t="shop" onclick="tab('shop')">فروشگاه</button>
+    </div>
+  </div>
+
+  <section id="v-home" class="p-4 space-y-3">
+    <div class="grid grid-cols-2 gap-2" id="stats"></div>
+    <div class="card p-3">
+      <div class="text-xs font-semibold mb-2">وضعیت سرویس</div>
+      <div id="svc" class="text-xs space-y-1 muted">—</div>
+    </div>
+    <div class="card p-3">
+      <div class="text-xs font-semibold mb-2">اقدامات سریع</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="btn btn-g text-xs" onclick="apiPost('/dashboard/sync-traffic')">Sync ترافیک</button>
+        <button class="btn btn-g text-xs" onclick="apiPost('/dashboard/xray/restart')">Restart Xray</button>
+        <button class="btn btn-g text-xs" onclick="tab('orders')">تأیید سفارش‌ها</button>
+        <button class="btn btn-g text-xs" onclick="openFull()">داشبورد کامل</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-orders" class="p-4 hidden">
+    <div class="flex justify-between items-center mb-2">
+      <div class="text-sm font-semibold">سفارش‌های در انتظار</div>
+      <button class="btn btn-g text-xs py-1" onclick="loadOrders()">↻</button>
+    </div>
+    <div class="card" id="ordersList"><div class="loader">…</div></div>
+  </section>
+
+  <section id="v-clients" class="p-4 hidden">
+    <div class="flex justify-between items-center mb-2">
+      <div class="text-sm font-semibold">کلاینت‌های اخیر</div>
+      <button class="btn btn-g text-xs py-1" onclick="loadClients()">↻</button>
+    </div>
+    <div class="card" id="clientsList"><div class="loader">…</div></div>
+  </section>
+
+  <section id="v-nodes" class="p-4 hidden">
+    <div class="flex justify-between items-center mb-2">
+      <div class="text-sm font-semibold">نودها</div>
+      <button class="btn btn-g text-xs py-1" onclick="loadNodes()">↻</button>
+    </div>
+    <div class="card" id="nodesList"><div class="loader">…</div></div>
+  </section>
+
+  <section id="v-shop" class="p-4 hidden">
+    <div class="text-sm font-semibold mb-2">تنظیمات سریع فروش</div>
+    <div class="card p-3 space-y-3 text-xs">
+      <div>
+        <div class="muted mb-1">پاداش معرف (%)</div>
+        <div class="flex gap-2">
+          <input id="refPct" type="number" min="0" max="50" class="flex-1 rounded-lg bg-white/10 p-2" placeholder="10"/>
+          <button class="btn btn-p" onclick="saveReferral()">ذخیره</button>
+        </div>
+      </div>
+      <div id="refStatus" class="muted">—</div>
+      <div class="border-t border-white/10 pt-3">
+        <div class="muted mb-1">تست رایگان</div>
+        <div id="trialStatus" class="mb-2">—</div>
+        <button class="btn btn-g w-full" onclick="toggleTrial()">فعال/غیرفعال تست</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor('#070b14'); tg.setBackgroundColor('#070b14'); }catch(e){} }
+const initData = tg?.initData || '';
+let TOKEN = sessionStorage.getItem('ev_admin_jwt') || '';
+let me = null;
+
+async function tmaAuth() {
+  const r = await fetch('/api/tma/admin/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': initData },
+    body: JSON.stringify({ initData }),
+    credentials: 'include'
+  });
+  const d = await r.json();
+  if (!d.success) throw new Error(d.msg || 'auth failed');
+  TOKEN = d.obj.token;
+  sessionStorage.setItem('ev_admin_jwt', TOKEN);
+  me = d.obj;
+  return d.obj;
+}
+
+async function api(path, opts={}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(opts.headers||{})
+  };
+  if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+  const r = await fetch('/api' + path, { ...opts, headers, credentials: 'include' });
+  const t = await r.text();
+  try { return JSON.parse(t); } catch(e) { return { success:false, msg: t||('HTTP '+r.status) }; }
+}
+
+async function apiPost(path, body={}) {
+  const d = await api(path, { method:'POST', body: JSON.stringify(body) });
+  tg?.showAlert?.(d.success ? 'انجام شد' : (d.msg||'خطا'));
+  if (d.success) refresh();
+}
+
+function showApp() {
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('who').textContent =
+    (me?.tgUsername ? '@'+me.tgUsername+' · ' : '') + (me?.tgRole||'') + ' · panel:' + (me?.username||'');
+  const base = (me?.panelPath && me.panelPath !== '/') ? me.panelPath : '';
+  document.getElementById('fullPanel').href = base + '/dashboard';
+}
+
+function tab(name) {
+  ['home','orders','clients','nodes','shop'].forEach(t=>{
+    const el=document.getElementById('v-'+t);
+    if(el) el.classList.toggle('hidden', t!==name);
+  });
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('on', b.dataset.t===name));
+  if(name==='orders') loadOrders();
+  if(name==='clients') loadClients();
+  if(name==='nodes') loadNodes();
+  if(name==='shop') loadShop();
+}
+
+function human(n){ n=Number(n)||0; if(n<1024)return n+' B'; const u=['KB','MB','GB','TB']; let i=-1,f=n; while(f>=1024&&i<u.length-1){f/=1024;i++} return f.toFixed(1)+' '+u[i]; }
+function toman(n){ return (Number(n)||0).toLocaleString('fa-IR'); }
+
+async function loadHome() {
+  const d = await api('/dashboard/overview');
+  const box = document.getElementById('stats');
+  if (!d.success) { box.innerHTML = '<div class="muted text-xs">'+esc(d.msg||'خطا')+'</div>'; return; }
+  const o = d.obj || {};
+  const ram = (o.memUsedBytes && o.memTotalBytes) ? Math.round(100*o.memUsedBytes/o.memTotalBytes)+'%' : '—';
+  const xrayOn = o.xray && (o.xray.running===true || o.xray.Running===true || o.xray.state==='running');
+  const uptimeH = o.uptimeSeconds ? Math.floor(o.uptimeSeconds/3600)+'h' : '—';
+  const cards = [
+    ['CPU', (o.cpuPercent!=null?Math.round(o.cpuPercent)+'%':'—')],
+    ['RAM', ram],
+    ['کلاینت', o.clientCount ?? '—'],
+    ['اینباند', o.inboundCount ?? '—'],
+    ['ترافیک', human((o.trafficUp||0)+(o.trafficDown||0))],
+    ['Xray', xrayOn ? 'روشن' : '—'],
+  ];
+  box.innerHTML = cards.map(([l,v])=>`<div class="card stat"><div class="v">${esc(String(v))}</div><div class="l">${esc(l)}</div></div>`).join('');
+  document.getElementById('svc').innerHTML =
+    `Uptime: ${esc(uptimeH)}<br>Version: ${esc(String(o.panelVersion||'—'))}<br>Net ↑ ${human(o.netSentBytes||0)} · ↓ ${human(o.netRecvBytes||0)}`;
+}
+
+async function loadOrders() {
+  const el = document.getElementById('ordersList');
+  const d = await api('/pro/shop/orders?status=pending_review');
+  if (!d.success) { el.innerHTML = '<div class="p-3 muted">'+esc(d.msg||'خطا')+'</div>'; return; }
+  const rows = d.obj || [];
+  if (!rows.length) { el.innerHTML = '<div class="p-3 muted text-sm">سفارش معلقی نیست ✅</div>'; return; }
+  el.innerHTML = rows.map(o=>`
+    <div class="row items-start">
+      <div>
+        <div class="font-semibold">#${o.id} · ${esc(o.planName||o.kind||'')}</div>
+        <div class="muted text-[11px]">TG ${o.telegramUserId} · ${toman(o.priceToman)} ت</div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <button class="btn btn-p text-[11px] py-1" onclick="approve(${o.id})">تأیید</button>
+        <button class="btn btn-g text-[11px] py-1" onclick="reject(${o.id})">رد</button>
+      </div>
+    </div>`).join('');
+}
+
+async function approve(id){
+  const d = await api('/pro/shop/orders/'+id+'/approve',{method:'POST',body:'{}'});
+  tg?.showAlert?.(d.success?'تأیید شد':(d.msg||'خطا'));
+  loadOrders();
+}
+async function reject(id){
+  if(!confirm('رد شود؟')) return;
+  const d = await api('/pro/shop/orders/'+id+'/reject',{method:'POST',body:'{}'});
+  tg?.showAlert?.(d.success?'رد شد':(d.msg||'خطا'));
+  loadOrders();
+}
+
+async function loadClients(){
+  const el = document.getElementById('clientsList');
+  const d = await api('/clients?limit=30');
+  if(!d.success){ el.innerHTML='<div class="p-3 muted">'+esc(d.msg||'خطا')+'</div>'; return; }
+  let rows = d.data || d.obj;
+  if (rows && rows.clients) rows = rows.clients;
+  if (!Array.isArray(rows)) rows = [];
+  rows = rows.slice().reverse();
+  if(!rows.length){ el.innerHTML='<div class="p-3 muted">کلاینتی نیست</div>'; return; }
+  el.innerHTML = rows.slice(0,40).map(c=>{
+    const st = c.enable ? '<span class="pill ok">on</span>' : '<span class="pill bad">off</span>';
+    return `<div class="row"><div><div>${esc(c.email||c.subId||('#'+c.id))}</div>
+      <div class="muted text-[11px]">${human((c.up||0)+(c.down||0))} / ${(c.totalGB||0)}GB</div></div>${st}</div>`;
+  }).join('');
+}
+
+async function loadNodes(){
+  const el = document.getElementById('nodesList');
+  // try control plane nodes endpoint
+  let d = await api('/pro/nodes');
+  if(!d.success){ el.innerHTML='<div class="p-3 muted text-sm">'+esc(d.msg||'نود از API در دسترس نیست — از پنل کامل استفاده کنید')+'</div>'; return; }
+  let rows = d.obj;
+  if (rows && rows.nodes) rows = rows.nodes;
+  if (!Array.isArray(rows)) rows = [];
+  if(!rows.length){ el.innerHTML='<div class="p-3 muted">نودی ثبت نشده (تک‌سرور)</div>'; return; }
+  el.innerHTML = rows.map(n=>{
+    const ok = n.enabled!==false && n.healthState!=='unhealthy';
+    return `<div class="row"><div><div class="font-medium">${esc(n.name||('node '+n.id))}</div>
+      <div class="muted text-[11px]" dir="ltr">${esc(n.address||'')}:${n.port||''}</div></div>
+      <span class="pill ${ok?'ok':'bad'}">${ok?'healthy':'down'}</span></div>`;
+  }).join('');
+}
+
+async function loadShop(){
+  const r = await api('/pro/shop/referral');
+  if(r.success){
+    document.getElementById('refPct').value = r.obj.percent ?? 0;
+    document.getElementById('refStatus').textContent =
+      (r.obj.enabled?'روشن':'خاموش') + ' · ' + (r.obj.percent||0) + '%' +
+      (r.obj.firstPurchaseOnly?' · فقط خرید اول':'');
+  }
+  const t = await api('/pro/shop/trial');
+  if(t.success){
+    document.getElementById('trialStatus').textContent =
+      (t.obj.enabled?'فعال':'غیرفعال') + ` · ${t.obj.mb||0}MB · ${t.obj.hours||0}h · inbound ${t.obj.inboundId||0}`;
+    window._trial = t.obj;
+  }
+}
+
+async function saveReferral(){
+  const pct = Number(document.getElementById('refPct').value||0);
+  const d = await api('/shop/referral',{method:'POST',body:JSON.stringify({enabled:true,percent:pct})});
+  tg?.showAlert?.(d.success?'ذخیره شد':(d.msg||'خطا'));
+  loadShop();
+}
+async function toggleTrial(){
+  const cur = window._trial || {};
+  const d = await api('/shop/trial',{method:'POST',body:JSON.stringify({enabled:!cur.enabled})});
+  tg?.showAlert?.(d.success?'ذخیره شد':(d.msg||'خطا'));
+  loadShop();
+}
+
+function openFull(){
+  const href = document.getElementById('fullPanel').href;
+  if (tg?.openLink) tg.openLink(href);
+  else window.open(href,'_blank');
+}
+
+function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+async function refresh(){
+  await loadHome();
+  if(!document.getElementById('v-orders').classList.contains('hidden')) loadOrders();
+}
+
+async function boot(){
+  const msg = document.getElementById('gateMsg');
+  const btn = document.getElementById('gateBtn');
+  btn.style.display='none';
+  msg.textContent = 'در حال احراز هویت تلگرام…';
+  if (!initData) {
+    msg.textContent = 'این صفحه باید از داخل تلگرام (دکمه پنل ادمین) باز شود.';
+    btn.style.display='block';
+    return;
+  }
+  try {
+    await tmaAuth();
+    showApp();
+    await loadHome();
+  } catch (e) {
+    msg.textContent = e.message || String(e);
+    btn.style.display='block';
+  }
+}
+boot();
+</script>
+</body>
+</html>

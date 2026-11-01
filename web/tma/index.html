@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+  <title>ELECTRUVPN BETA1</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="/assets/vendor/tailwind.js"></script>
+  <script>window.tailwind=window.tailwind||{};</script>
+  <style>
+    :root{
+      --bg:#070a12;
+      --bg2:#0c1220;
+      --card:rgba(255,255,255,.055);
+      --card-border:rgba(255,255,255,.09);
+      --text:#eef2ff;
+      --muted:#94a3b8;
+      --accent:#8b5cf6;
+      --accent2:#22d3ee;
+      --accent3:#f472b6;
+      --ok:#34d399;
+      --warn:#fbbf24;
+      --danger:#fb7185;
+      --tg-bg:var(--tg-theme-bg-color,var(--bg));
+      --tg-text:var(--tg-theme-text-color,var(--text));
+      --tg-btn:var(--tg-theme-button-color,#7c3aed);
+      --tg-btn-text:var(--tg-theme-button-text-color,#fff);
+      --safe-b:env(safe-area-inset-bottom,0px);
+      --nav-h:68px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:
+      radial-gradient(900px 420px at 100% -10%,rgba(139,92,246,.22),transparent 55%),
+      radial-gradient(700px 380px at -10% 20%,rgba(34,211,238,.12),transparent 50%),
+      radial-gradient(600px 300px at 50% 110%,rgba(244,114,182,.1),transparent 45%),
+      var(--tg-bg);color:var(--tg-text);
+      font-family:"Vazirmatn",system-ui,-apple-system,"Segoe UI",sans-serif}
+    body{padding:0 0 calc(var(--nav-h) + var(--safe-b) + 12px);max-width:480px;margin:0 auto}
+
+    /* Header */
+    .app-header{position:sticky;top:0;z-index:40;padding:14px 16px 10px;
+      background:linear-gradient(180deg,rgba(7,10,18,.92),rgba(7,10,18,.75) 70%,transparent);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+    .brand-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .brand-left{display:flex;align-items:center;gap:10px;min-width:0}
+    .brand-mark{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;
+      background:linear-gradient(135deg,#8b5cf6,#22d3ee);box-shadow:0 8px 24px rgba(139,92,246,.35);flex-shrink:0}
+    .brand-mark svg{width:22px;height:22px}
+    .brand-title{font-weight:800;font-size:15px;letter-spacing:-.02em;line-height:1.2}
+    .brand-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+    .icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--card-border);
+      background:rgba(255,255,255,.05);color:var(--text);display:grid;place-items:center;cursor:pointer}
+    .icon-btn:active{transform:scale(.96)}
+
+    /* Chips / tabs top scroll */
+    .chip-scroll{display:flex;gap:8px;overflow-x:auto;padding:8px 16px 4px;scrollbar-width:none;margin:0 -0}
+    .chip-scroll::-webkit-scrollbar{display:none}
+    .tab{flex:0 0 auto;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;
+      background:rgba(255,255,255,.05);border:1px solid transparent;color:var(--muted);cursor:pointer;transition:.2s}
+    .tab.on{color:#fff;background:linear-gradient(135deg,rgba(139,92,246,.9),rgba(34,211,238,.75));
+      border-color:rgba(255,255,255,.12);box-shadow:0 6px 18px rgba(139,92,246,.3)}
+
+    /* Content */
+    .page{padding:12px 16px 8px}
+    .card{background:var(--card);border:1px solid var(--card-border);border-radius:18px;
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      box-shadow:0 8px 32px rgba(0,0,0,.18)}
+    .card-soft{background:rgba(255,255,255,.035)}
+    .section-title{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .muted{color:var(--muted);font-size:12px;line-height:1.6}
+
+    /* Buttons */
+    .btn{border-radius:14px;padding:.72rem 1rem;font-weight:700;font-size:.84rem;border:0;cursor:pointer;
+      transition:transform .12s,opacity .12s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+    .btn:active{transform:scale(.98)}
+    .btn-p{background:linear-gradient(135deg,#8b5cf6,#6366f1 50%,#22d3ee);color:#fff;
+      box-shadow:0 10px 28px rgba(99,102,241,.35)}
+    .btn-g{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--card-border)}
+    .btn-danger{background:rgba(251,113,133,.15);color:#fda4af;border:1px solid rgba(251,113,133,.25)}
+
+    /* Rings */
+    .rings{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:14px 0 8px}
+    .ring-wrap{text-align:center}
+    .ring{width:118px;height:118px;border-radius:50%;
+      background:conic-gradient(var(--c,#8b5cf6) calc(var(--p)*1%),rgba(255,255,255,.07) 0);
+      display:grid;place-items:center;position:relative;filter:drop-shadow(0 0 18px color-mix(in srgb,var(--c,#8b5cf6) 40%,transparent))}
+    .ring::before{content:"";width:84px;height:84px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%,#141a2b,#070a12 70%);position:absolute;border:1px solid rgba(255,255,255,.05)}
+    .ring span{position:relative;font-weight:800;font-size:1rem;letter-spacing:-.02em}
+    .ring label{display:block;font-size:.68rem;color:var(--muted);margin-top:8px;font-weight:600}
+
+    .bar,.bar2{height:11px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:6px 0}
+    .bar>i,.bar2>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#22d3ee,#8b5cf6,#f472b6);transition:width .4s ease}
+
+    /* Chart */
+    .chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:8px}
+    .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+    .chart .col .stem{width:100%;max-width:26px;border-radius:8px 8px 4px 4px;
+      background:linear-gradient(180deg,#22d3ee,#8b5cf6);min-height:2px;transition:height .35s ease}
+    .chart .col .lbl{font-size:10px;color:var(--muted)}
+
+    .range-tab{padding:6px 12px;border-radius:10px;font-size:11px;font-weight:600;
+      background:rgba(255,255,255,.05);color:var(--muted);border:0;cursor:pointer}
+    .range-tab.bg-indigo-500\/80,.range-tab.font-semibold{background:linear-gradient(135deg,#8b5cf6,#6366f1)!important;color:#fff!important}
+
+    /* Speed / ping */
+    .ping-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem .85rem;border-radius:14px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);margin-bottom:8px}
+    .ping-badge{font-size:11px;font-weight:700;padding:.22rem .55rem;border-radius:999px}
+    .ping-good{background:rgba(52,211,153,.18);color:#6ee7b7}
+    .ping-mid{background:rgba(251,191,36,.15);color:#fcd34d}
+    .ping-bad{background:rgba(251,113,133,.15);color:#fda4af}
+    .pulse{animation:pulse 1.2s ease infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    /* Inputs */
+    input,select,textarea{width:100%;border-radius:14px;background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.1);color:var(--text);padding:.75rem .9rem;font-size:14px;outline:none}
+    input:focus,select:focus{border-color:rgba(139,92,246,.55);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
+    .pay-box{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
+
+    /* Stat tiles */
+    .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .stat-tile{padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+    .stat-tile .lbl{font-size:10px;color:var(--muted);margin-bottom:4px}
+    .stat-tile .val{font-size:14px;font-weight:700}
+
+    /* Hero banner on home */
+    .hero{position:relative;overflow:hidden;padding:16px;border-radius:20px;margin-bottom:12px;
+      background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(34,211,238,.12) 55%,rgba(244,114,182,.1));
+      border:1px solid rgba(255,255,255,.1)}
+    .hero::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;
+      right:-30px;top:-40px;background:rgba(255,255,255,.06);filter:blur(2px)}
+    .bal-pill{
+      display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;
+      background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(34,211,238,.12));
+      border:1px solid rgba(139,92,246,.35);font-size:12px;font-weight:700
+    }
+    .bal-pill .amt{color:#c4b5fd;font-variant-numeric:tabular-nums}
+    .health-card{padding:14px 16px;border-radius:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)}
+    .health-top{display:flex;align-items:center;gap:14px}
+    .health-ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;position:relative;flex-shrink:0;
+      background:conic-gradient(var(--hc,#34d399) calc(var(--hp)*1%),rgba(255,255,255,.08) 0)}
+    .health-ring::before{content:"";width:48px;height:48px;border-radius:50%;background:#0a0e18;position:absolute;border:1px solid rgba(255,255,255,.06)}
+    .health-ring span{position:relative;font-weight:800;font-size:13px}
+    .health-meta{min-width:0;flex:1}
+    .health-meta .lbl{font-size:11px;color:var(--muted);margin-bottom:2px}
+    .health-meta .title{font-size:15px;font-weight:800;margin-bottom:2px}
+    .health-meta .sum{font-size:11px;color:var(--muted);line-height:1.45}
+    .health-factors{margin-top:10px;display:none;flex-direction:column;gap:6px}
+    .health-card.open .health-factors{display:flex}
+    .health-factor{display:flex;justify-content:space-between;gap:8px;font-size:10px;padding:6px 8px;border-radius:10px;background:rgba(0,0,0,.2)}
+    .health-factor .d{color:var(--muted);text-align:left;max-width:60%}
+    .home-bal-card{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:14px 16px;border-radius:16px;margin-bottom:12px;
+      background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(34,211,238,.08));
+      border:1px solid rgba(139,92,246,.28);cursor:pointer
+    }
+    .home-bal-card .lbl{font-size:11px;color:var(--muted);margin-bottom:2px}
+    .home-bal-card .amt{font-size:18px;font-weight:800;letter-spacing:-.02em}
+    .home-bal-card .go{font-size:11px;font-weight:700;color:#a78bfa}
+    .hero-kicker{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c4b5fd;margin-bottom:6px}
+    .hero h2{margin:0 0 4px;font-size:18px;font-weight:800;letter-spacing:-.02em}
+    .hero p{margin:0;font-size:12px;color:var(--muted);line-height:1.55;max-width:85%}
+
+    /* Bottom nav */
+    .bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(480px,100%);
+      padding:8px 10px calc(8px + var(--safe-b));z-index:50;
+      background:linear-gradient(180deg,rgba(7,10,18,.55),rgba(7,10,18,.94));
+      border-top:1px solid rgba(255,255,255,.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      display:flex;gap:4px}
+    .bnav-item{flex:1;border:0;background:transparent;color:var(--muted);padding:8px 4px;border-radius:14px;
+      font-size:10px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+    .bnav-item .ico{font-size:18px;line-height:1}
+    .bnav-item.on{color:#fff;background:rgba(139,92,246,.18)}
+    .bnav-item.on .ico{filter:drop-shadow(0 0 8px rgba(139,92,246,.6))}
+
+    /* More sheet */
+    #moreSheet{display:none;padding:10px 16px 0}
+    #moreSheet.open{display:block}
+    .more-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+    .more-item{padding:14px 12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
+      text-align:center;cursor:pointer;font-size:12px;font-weight:700}
+    .more-item span{display:block;font-size:20px;margin-bottom:6px}
+
+
+    /* Modal sheet */
+    .tma-modal-backdrop{
+      position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;justify-content:center;
+      background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+      padding:16px 16px calc(16px + var(--safe-b));animation:fadeIn .2s ease
+    }
+    .tma-modal{
+      width:min(420px,100%);border-radius:22px;padding:22px 20px 18px;text-align:center;
+      background:linear-gradient(165deg,rgba(22,18,36,.98),rgba(10,12,20,.98));
+      border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px rgba(0,0,0,.5)
+    }
+    .tma-modal.success{border-color:rgba(52,211,153,.35)}
+    .tma-modal.warn{border-color:rgba(251,191,36,.35)}
+    .tma-modal-ico{width:56px;height:56px;border-radius:18px;margin:0 auto 12px;display:grid;place-items:center;font-size:28px}
+    .tma-modal.success .tma-modal-ico{background:rgba(52,211,153,.15)}
+    .tma-modal.warn .tma-modal-ico{background:rgba(251,191,36,.15)}
+    .tma-modal h3{margin:0 0 8px;font-size:17px;font-weight:800;letter-spacing:-.02em}
+    .tma-modal p{margin:0 0 16px;font-size:13px;color:var(--muted);line-height:1.65}
+    .tma-modal .btn{width:100%}
+    .config-new-badge{
+      display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+      padding:3px 8px;border-radius:999px;background:rgba(52,211,153,.18);color:#6ee7b7;
+      border:1px solid rgba(52,211,153,.3);margin-bottom:8px
+    }
+    .config-highlight{
+      border-color:rgba(52,211,153,.45)!important;
+      box-shadow:0 0 0 1px rgba(52,211,153,.2),0 12px 32px rgba(52,211,153,.12)
+    }
+    .order-row{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:8px}
+    .order-row .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px}
+    .order-row .name{font-weight:700;font-size:12px}
+    .order-row .meta{color:var(--muted);font-size:10px;line-height:1.5}
+    .order-st{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+    .order-st.ok{background:rgba(52,211,153,.15);color:#6ee7b7}
+    .order-st.wait{background:rgba(251,191,36,.15);color:#fcd34d}
+    .order-st.bad{background:rgba(251,113,133,.15);color:#fda4af}
+    .order-st.muted{background:rgba(148,163,184,.12);color:#94a3b8}
+    .pin-lock{position:fixed;inset:0;z-index:200;background:rgba(6,8,14,.92);backdrop-filter:blur(12px);
+      display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+    .pin-lock.hidden{display:none!important}
+    .pin-box{width:100%;max-width:300px}
+    .pin-box h2{font-size:18px;font-weight:800;margin-bottom:6px}
+    .pin-box p{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+    .pin-input{width:100%;text-align:center;letter-spacing:.4em;font-size:22px;font-weight:700;
+      padding:14px;border-radius:14px;border:1px solid rgba(139,92,246,.35);background:rgba(255,255,255,.06);color:#fff;margin-bottom:12px}
+    .pin-err{font-size:11px;color:#fda4af;min-height:16px;margin-bottom:8px}
+    .hidden{display:none!important}
+    .fade-in{animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    /* TG theme soft override when available */
+    body.tg-ready{background:var(--tg-theme-bg-color,var(--bg))}
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-row">
+      <div class="brand-left">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" fill="white"/></svg>
+        </div>
+        <div class="min-w-0">
+          <div class="brand-title">ELECTRUVPN <span style="color:#a78bfa;font-weight:700">BETA1</span></div>
+          <div class="brand-sub" id="subLine">در حال بارگذاری…</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" class="bal-pill" onclick="tab('wallet')" title="کیف پول" id="headerBalPill">
+          💰 <span class="amt" id="headerWalletBal">—</span>
+        </button>
+        <button class="icon-btn" onclick="load()" title="بروزرسانی" aria-label="refresh">↻</button>
+      </div>
+    </div>
+    <div class="chip-scroll" id="tabs">
+      <button class="tab on" data-t="home" onclick="tab('home')">خانه</button>
+      <button class="tab" data-t="speed" onclick="tab('speed')">سرعت</button>
+      <button class="tab" data-t="shop" onclick="tab('shop')">خرید</button>
+      <button class="tab" data-t="wallet" onclick="tab('wallet')">کیف پول</button>
+      <button class="tab" data-t="devices" onclick="tab('devices')">دستگاه‌ها</button>
+      <button class="tab" data-t="backup" onclick="tab('backup')">پشتیبان</button>
+      <button class="tab" data-t="invite" onclick="tab('invite')">دعوت</button>
+      <button class="tab" data-t="gift" onclick="tab('gift')">هدیه</button>
+    </div>
+  </header>
+
+  <main class="page">
+  <div id="moreSheet">
+    <div class="more-grid">
+      <button type="button" class="more-item" onclick="tab('speed')"><span>⚡</span>تست سرعت</button>
+      <button type="button" class="more-item" onclick="tab('backup')"><span>☁️</span>پشتیبان ابری</button>
+      <button type="button" class="more-item" onclick="tab('invite')"><span>🔗</span>دعوت دوستان</button>
+      <button type="button" class="more-item" onclick="tab('gift')"><span>🎁</span>کارت هدیه</button>
+    </div>
+  </div>
+
+  <section id="v-home" class="fade-in">
+    <div class="hero">
+      <div class="hero-kicker">Your connection</div>
+      <h2>وضعیت اشتراک</h2>
+      <p>مصرف، زمان باقی‌مانده و لینک اتصال در یک نگاه</p>
+    </div>
+    <div class="home-bal-card" onclick="tab('wallet')" role="button">
+      <div>
+        <div class="lbl">موجودی کیف پول</div>
+        <div class="amt" id="homeWalletBal">— تومان</div>
+      </div>
+      <div class="go">شارژ / جزئیات ←</div>
+    </div>
+    <div class="health-card" id="healthCard" onclick="this.classList.toggle('open')">
+      <div class="health-top">
+        <div class="health-ring" id="healthRing" style="--hp:0;--hc:#94a3b8"><span id="healthScoreTxt">—</span></div>
+        <div class="health-meta">
+          <div class="lbl">Subscription Health Score</div>
+          <div class="title" id="healthLabel">—</div>
+          <div class="sum" id="healthSummary">برای جزئیات ضربه بزنید</div>
+        </div>
+      </div>
+      <div class="health-factors" id="healthFactors"></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="section-title">📉 مصرف و زمان باقی‌مانده</div>
+      <div class="rings">
+        <div class="ring-wrap">
+          <div class="ring" id="trafficRing" style="--p:0;--c:#22d3ee"><span id="trafficPct">0%</span></div>
+          <label>ترافیک مصرف‌شده</label>
+        </div>
+        <div class="ring-wrap">
+          <div class="ring" id="daysRing" style="--p:0;--c:#a78bfa"><span id="daysPct">—</span></div>
+          <label>روزهای باقی‌مانده</label>
+        </div>
+      </div>
+      <div class="muted mb-1">حجم</div>
+      <div class="bar2"><i id="usageBar" style="width:0%"></i></div>
+      <div class="flex justify-between text-xs"><span id="usedTxt">—</span><span id="limitTxt">—</span></div>
+      <div class="stat-grid mt-3">
+        <div class="stat-tile"><div class="lbl">آپلود</div><div class="val">↑ <span id="upTxt">0</span></div></div>
+        <div class="stat-tile"><div class="lbl">دانلود</div><div class="val">↓ <span id="downTxt">0</span></div></div>
+      </div>
+      <div class="mt-3 text-xs" style="color:var(--muted)">انقضا: <span id="expTxt" style="color:var(--text);font-weight:600">—</span></div>
+    </div>
+    <div class="card p-4 mb-3" id="trialCard">
+      <div class="section-title">🎁 تست رایگان</div>
+      <p class="muted mb-3">با یک کلیک کیفیت سرور را امتحان کنید. هر اکانت تلگرام فقط یک‌بار.</p>
+      <button class="btn btn-p w-full" onclick="claimTrial()">دریافت تست رایگان</button>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="flex justify-between items-center mb-2">
+        <div class="section-title mb-0">📊 مصرف ۷ روز گذشته</div>
+        <button class="btn btn-g text-[10px] py-1 px-2" onclick="loadUsageChart()">↻</button>
+      </div>
+      <div class="flex gap-2 mb-2" id="usageRangeTabs">
+        <button type="button" data-range="day" class="range-tab">روزانه</button>
+        <button type="button" data-range="week" class="range-tab bg-indigo-500/80 font-semibold">هفتگی</button>
+        <button type="button" data-range="month" class="range-tab">ماهانه</button>
+      </div>
+      <div class="chart" id="usageChart"><div class="text-xs opacity-50 w-full text-center self-center">در حال بارگذاری…</div></div>
+      <div class="flex justify-between text-[10px] opacity-50 mt-1"><span id="chartLeftLbl">قدیمی‌تر</span><span id="chartPeak">—</span><span id="chartRightLbl">امروز</span></div>
+      <div class="mt-3 grid grid-cols-2 gap-2 text-xs" id="dayNightBox">
+        <div class="rounded-xl p-2 text-center" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2)">
+          <div class="opacity-60 text-[10px]">روز (۶–۱۸)</div>
+          <div class="font-semibold" id="dayUsage">—</div>
+          <div class="text-[10px] opacity-50" id="dayPct">—</div>
+        </div>
+        <div class="rounded-xl p-2 text-center" style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.22)">
+          <div class="opacity-60 text-[10px]">شب (۱۸–۶)</div>
+          <div class="font-semibold" id="nightUsage">—</div>
+          <div class="text-[10px] opacity-50" id="nightPct">—</div>
+        </div>
+      </div>
+      <div class="mt-2 flex justify-between text-[10px] opacity-50">
+        <span id="usageTotal">مجموع: —</span>
+        <span id="usageAvg">میانگین: —</span>
+      </div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="section-title">📲 اپ پیشنهادی</div>
+      <p class="muted mb-3">برای اتصال، NapsternetV را نصب کنید:</p>
+      <a class="btn btn-p w-full mb-2" href="https://play.google.com/store/apps/details?id=com.napsternetlabs.napsternetv" target="_blank">⬇️ دانلود اندروید</a>
+      <a class="btn btn-g w-full" href="https://apps.apple.com/us/app/npv-tunnel/id1629465476" target="_blank">⬇️ دانلود iOS</a>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="section-title">کانفیگ</div>
+      <div class="text-[11px] break-all opacity-80 mb-3 p-3 rounded-xl" style="background:rgba(0,0,0,.25);font-family:ui-monospace,monospace" id="linkBox">—</div>
+      <div id="smartCopyPreview" class="text-[10px] opacity-60 mb-2 leading-relaxed hidden" style="white-space:pre-wrap"></div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn btn-p flex-1" onclick="copySmartConfig()">📋 کپی هوشمند</button>
+        <button class="btn btn-g flex-1" onclick="copyLink()">فقط لینک</button>
+        <button class="btn btn-g flex-1" onclick="showQR()">QR Code</button>
+      </div>
+      <p class="text-[10px] opacity-50 mt-2">کپی هوشمند: نام شخصی + انقضا + لینک اتصال در یک متن</p>
+      <canvas id="qr" class="mt-3 mx-auto hidden" width="200" height="200"></canvas>
+    </div>
+  </section>
+
+  <section id="v-invite" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="section-title">🔗 دعوت دوستان</div>
+      <p class="muted mb-3" id="inviteDesc">با دعوت دوستان، درصدی از خریدشان به کیف پول شما واریز می‌شود.</p>
+      <div class="text-center text-sm font-mono break-all rounded-xl p-3 mb-3 select-all" style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2)" id="inviteLink">—</div>
+      <button class="btn btn-p w-full mb-3" onclick="copyInvite()">📋 کپی لینک دعوت</button>
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="stat-tile"><div class="lbl">دعوت</div><div class="val" id="invCount">0</div></div>
+        <div class="stat-tile"><div class="lbl">پاداش</div><div class="val" id="rewCount">0</div></div>
+        <div class="stat-tile"><div class="lbl">درآمد</div><div class="val" id="rewSum">0</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-gift" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="section-title">♻️ فعال‌سازی کد هدیه</div>
+      <div class="flex gap-2 mb-2">
+        <input id="giftCodeIn" class="flex-1 text-sm" placeholder="EVG-XXXX-XXXXXX" dir="ltr"/>
+        <button class="btn btn-p text-xs px-4" onclick="redeemGift()">فعال</button>
+      </div>
+      <div class="text-[11px] opacity-60" id="giftRedeemMsg"></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="section-title">🎁 خرید کارت هدیه</div>
+      <div id="giftPlans" class="space-y-2"></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="section-title">کارت‌های من</div>
+      <div id="giftMine" class="text-xs space-y-1 opacity-80">—</div>
+    </div>
+  </section>
+
+
+  <section id="v-speed" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-1">⚡ تست سرعت و پینگ لحظه‌ای</div>
+      <p class="text-xs opacity-65 mb-3 leading-relaxed">پینگ از <b>دستگاه شما</b> به هر نود اندازه‌گیری می‌شود تا بهترین مسیر برای اینترنت فعلی‌تان (همراه اول، ایرانسل، وای‌فای…) پیدا شود.</p>
+      <button class="btn btn-p w-full mb-2" id="speedBtn" onclick="runSpeedTest()">شروع تست کامل</button>
+      <div class="text-[11px] opacity-60 mb-2" id="speedStatus">آماده</div>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="card p-3 text-center"><div class="text-[10px] opacity-60">دانلود</div><div class="text-lg font-bold" id="dlMbps">—</div><div class="text-[10px] opacity-50">Mbps</div></div>
+        <div class="card p-3 text-center"><div class="text-[10px] opacity-60">بهترین پینگ</div><div class="text-lg font-bold" id="bestPing">—</div><div class="text-[10px] opacity-50">ms</div></div>
+      </div>
+      <div id="speedBest" class="hidden card p-3 mb-3" style="border-color:rgba(74,222,128,.35)">
+        <div class="text-xs opacity-70">پیشنهاد برای شما</div>
+        <div class="text-sm font-bold mt-1" id="bestName">—</div>
+        <div class="text-xs mt-1" id="bestMeta">—</div>
+      </div>
+      <div id="speedList" class="space-y-1"></div>
+    </div>
+  </section>
+
+  <section id="v-shop" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">🏷 کد تخفیف</div>
+      <div class="flex gap-2 mb-1">
+        <input id="promoInput" class="flex-1 rounded-lg bg-white/10 p-2 text-sm" placeholder="مثلاً YALDA20" dir="ltr"/>
+        <button class="btn btn-g text-xs" onclick="applyPromoPreview()">اعمال</button>
+      </div>
+      <div class="text-[11px] opacity-70" id="promoHint">کد را وارد کنید سپس پلن را بخرید</div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">پلن‌ها</div>
+      <div id="plans" class="space-y-2"></div>
+    </div>
+    <div id="payPanel" class="card p-4 mb-3 hidden">
+      <div class="text-sm font-semibold mb-2">پرداخت کارت‌به‌کارت</div>
+      <div class="text-xs mb-1">مبلغ: <b id="payAmount">0</b> تومان</div>
+      <div class="pay-box text-sm mb-1" id="payCard">—</div>
+      <div class="text-xs opacity-70 mb-2" id="payHolder"></div>
+      <div class="text-xs opacity-70 mb-3" id="payInst"></div>
+      <button class="btn btn-p w-full" onclick="copyCard()">کپی شماره کارت</button>
+      <p class="text-[10px] opacity-50 mt-2">بعد از واریز، عکس رسید را در چت ربات ارسال کنید. ادمین تأیید می‌کند.</p>
+    </div>
+    <div class="card p-4">
+      <div class="text-sm font-semibold mb-2">تمدید از کیف پول</div>
+      <select id="renewPlan" class="w-full rounded-lg bg-white/10 p-2 text-sm mb-2"></select>
+      <button class="btn btn-p w-full" onclick="renewWallet()">تمدید الان از موجودی</button>
+    </div>
+  </section>
+
+  <section id="v-wallet" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="text-xs opacity-70">موجودی باقی‌مانده کیف پول</div>
+      <div class="text-2xl font-bold" id="walletBal">۰ تومان</div>
+      <div class="text-[11px] opacity-60 mt-1">برای خرید پلن و تمدید از این موجودی استفاده می‌شود</div>
+      <div class="text-xs mt-1">تمدید خودکار: <span id="arState">—</span></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">شارژ</div>
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <button class="btn btn-g" onclick="topup(50000)">۵۰٬۰۰۰</button>
+        <button class="btn btn-g" onclick="topup(100000)">۱۰۰٬۰۰۰</button>
+        <button class="btn btn-g" onclick="topup(200000)">۲۰۰٬۰۰۰</button>
+        <button class="btn btn-g" onclick="topup(500000)">۵۰۰٬۰۰۰</button>
+      </div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">تمدید خودکار</div>
+      <select id="arPlan" class="w-full rounded-lg bg-white/10 p-2 text-sm mb-2"></select>
+      <div class="flex gap-2">
+        <button class="btn btn-p flex-1" onclick="setAR(true)">روشن</button>
+        <button class="btn btn-g flex-1" onclick="setAR(false)">خاموش</button>
+      </div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-1">🔒 قفل مینی‌اپ (PIN)</div>
+      <p class="text-[11px] opacity-60 mb-2 leading-relaxed">اگر گوشی دست دیگری افتاد، بدون رمز وارد مینی‌اپ نشوند. اختیاری است.</p>
+      <div class="text-xs mb-2">وضعیت: <b id="pinStatusLabel">—</b></div>
+      <div id="pinSetupBox" class="space-y-2">
+        <input id="pinNew" class="w-full rounded-lg bg-white/10 p-2 text-sm text-center" type="password" inputmode="numeric" maxlength="6" placeholder="رمز جدید (۴–۶ رقم)"/>
+        <input id="pinNew2" class="w-full rounded-lg bg-white/10 p-2 text-sm text-center" type="password" inputmode="numeric" maxlength="6" placeholder="تکرار رمز"/>
+        <input id="pinCurrent" class="w-full rounded-lg bg-white/10 p-2 text-sm text-center hidden" type="password" inputmode="numeric" maxlength="6" placeholder="رمز فعلی (برای تغییر)"/>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-p flex-1 text-xs" onclick="savePin()">فعال / تغییر</button>
+          <button type="button" class="btn btn-g flex-1 text-xs" id="pinDisableBtn" onclick="disablePin()">خاموش</button>
+        </div>
+      </div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="flex justify-between items-center mb-2">
+        <div class="text-sm font-semibold">🧾 تاریخچه خرید</div>
+        <button type="button" class="btn btn-g text-[10px] py-1 px-2" onclick="loadOrders()">↻</button>
+      </div>
+      <p class="text-[11px] opacity-60 mb-2">پلن، مبلغ، تاریخ و وضعیت سفارش‌های شما</p>
+      <div id="orderHistory" class="space-y-2 text-xs max-h-64 overflow-auto">
+        <div class="opacity-50 text-center py-2">در حال بارگذاری…</div>
+      </div>
+    </div>
+    <div class="card p-4">
+      <div class="text-sm font-semibold mb-2">حرکت‌های کیف پول</div>
+      <div id="ledger" class="space-y-1 text-xs max-h-40 overflow-auto"></div>
+    </div>
+  </section>
+
+  <section id="v-devices" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="flex justify-between items-center mb-2">
+        <div class="text-sm font-semibold">🏷️ نام‌گذاری کانفیگ‌ها</div>
+        <button type="button" class="btn btn-g text-[10px] py-1 px-2" onclick="loadConfigLabels()">↻</button>
+      </div>
+      <p class="text-[11px] opacity-60 mb-3 leading-relaxed">برای هر کانفیگ یک نام شخصی بگذارید (مثلاً موبایل، لپ‌تاپ، تلویزیون) تا راحت‌تر تشخیص دهید.</p>
+      <div id="configLabels" class="space-y-2 text-xs">
+        <div class="opacity-50 text-center py-2">در حال بارگذاری…</div>
+      </div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="flex justify-between items-center mb-1">
+        <div class="text-sm font-semibold">دستگاه‌ها و پروفایل</div>
+        <button class="btn btn-g text-xs" onclick="revokeAll()">قطع همه + کلید جدید</button>
+      </div>
+      <p class="text-[11px] opacity-60 mb-2 leading-relaxed">برای هر دستگاه مشخص کنید مربوط به آیفون، اندروید، ویندوز و… است تا مدیریت ساب‌ها ساده‌تر شود.</p>
+      <div class="text-[11px] opacity-60 mb-2" id="deviceLimitLine">—</div>
+      <div id="profileChips" class="flex flex-wrap gap-1 mb-3"></div>
+      <div id="devices" class="space-y-2 text-xs"></div>
+      <button class="btn btn-p w-full mt-3" onclick="resetUUID()">Reset UUID / کلید جدید</button>
+    </div>
+  </section>
+
+  <section id="v-backup" class="hidden fade-in">
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">☁️ پشتیبان ابری</div>
+      <p class="text-xs opacity-70 mb-3">با صدور کد، بعد از تعویض گوشی یا ریست تلگرام می‌توانید اکانت، اشتراک و کیف پول را بدون پشتیبانی برگردانید.</p>
+      <div id="backupStatus" class="text-xs opacity-80 mb-3">در حال بارگذاری…</div>
+      <button class="btn btn-p w-full mb-2" onclick="createBackup()">ذخیره در ابر / صدور کد</button>
+      <button class="btn btn-g w-full" id="revokeBtn" style="display:none" onclick="revokeBackup()">🚫 باطل کردن کد فعلی</button>
+    </div>
+    <div class="card p-4 mb-3 hidden" id="codeCard">
+      <div class="text-sm font-semibold mb-2">کد بازیابی شما</div>
+      <div class="text-center text-xl font-bold tracking-widest py-3 px-2 rounded-xl bg-white/10 select-all" id="codeDisplay" style="font-family:ui-monospace,monospace;letter-spacing:.12em"></div>
+      <button class="btn btn-p w-full mt-3" onclick="copyBackupCode()">📋 کپی کد</button>
+      <p class="text-[11px] opacity-70 mt-3 leading-relaxed" id="codeWarning">⚠️ این کد را در جای امن نگه دارید. هر کس این کد را داشته باشد می‌تواند اکانت شما را بازیابی کند. اعتبار کد ۳۰ روز است.</p>
+      <div class="text-xs mt-2 opacity-80" id="codeSummary"></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="text-sm font-semibold mb-2">♻️ بازیابی با کد</div>
+      <p class="text-xs opacity-70 mb-2">اگر گوشی عوض کرده‌اید، کد قبلی را اینجا وارد کنید.</p>
+      <input id="restoreCode" type="text" inputmode="text" autocomplete="off" placeholder="EV-XXXX-XXXXXX"
+        class="w-full rounded-lg bg-white/10 p-3 text-sm mb-2 text-center tracking-widest" style="font-family:ui-monospace,monospace;letter-spacing:.1em"/>
+      <button class="btn btn-p w-full" onclick="restoreBackup()">بازیابی اکانت</button>
+    </div>
+    <div class="card p-4 mb-3 hidden" id="restoreResult">
+      <div class="text-sm font-semibold mb-2 text-green-400">✅ بازیابی موفق</div>
+      <div class="text-xs opacity-80 mb-3" id="restoreSummary"></div>
+      <button class="btn btn-p w-full" onclick="tab('home');load()">رفتن به کانفیگ‌های من / خانه</button>
+    </div>
+  </section>
+
+  </main>
+
+  <nav class="bnav" aria-label="ناوبری اصلی">
+    <button type="button" class="bnav-item on" data-t="home" onclick="tab('home')"><span class="ico">🏠</span>خانه</button>
+    <button type="button" class="bnav-item" data-t="shop" onclick="tab('shop')"><span class="ico">🛒</span>خرید</button>
+    <button type="button" class="bnav-item" data-t="wallet" onclick="tab('wallet')"><span class="ico">💳</span>کیف پول</button>
+    <button type="button" class="bnav-item" data-t="devices" onclick="tab('devices')"><span class="ico">📱</span>دستگاه</button>
+    <button type="button" class="bnav-item" data-t="more" onclick="toggleMore()"><span class="ico">✦</span>بیشتر</button>
+  </nav>
+
+
+  <!-- PIN lock overlay -->
+  <div id="pinLock" class="pin-lock hidden" role="dialog" aria-modal="true">
+    <div class="pin-box">
+      <div style="font-size:36px;margin-bottom:8px">🔒</div>
+      <h2>قفل مینی‌اپ</h2>
+      <p>برای ادامه، رمز ۴ تا ۶ رقمی خود را وارد کنید</p>
+      <input id="pinUnlockInput" class="pin-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••"/>
+      <div class="pin-err" id="pinUnlockErr"></div>
+      <button type="button" class="btn btn-p w-full" onclick="submitPinUnlock()">باز کردن</button>
+    </div>
+  </div>
+
+  <!-- Purchase result modal -->
+  <div id="tmaModal" class="tma-modal-backdrop hidden" onclick="if(event.target===this)closeTmaModal()">
+    <div class="tma-modal" id="tmaModalCard">
+      <div class="tma-modal-ico" id="tmaModalIco">✓</div>
+      <h3 id="tmaModalTitle">—</h3>
+      <p id="tmaModalMsg">—</p>
+      <button type="button" class="btn btn-p" id="tmaModalBtn" onclick="onTmaModalConfirm()">تأیید</button>
+    </div>
+  </div>
+
+<script>
+
+const tg = window.Telegram?.WebApp; if (tg) { tg.ready(); tg.expand(); }
+document.addEventListener('DOMContentLoaded',()=>{
+  const pinInp=document.getElementById('pinUnlockInput');
+  if(pinInp) pinInp.addEventListener('keydown',e=>{ if(e.key==='Enter') submitPinUnlock(); });
+});
+const initData = tg?.initData || '';
+let data=null, lastCard='';
+// Lightweight local cache for instant TMA open (stale-while-revalidate).
+const CACHE_TTL_MS = 5 * 60 * 1000;
+function cacheKey(path){
+  const id = (initData || 'anon').slice(0, 64);
+  return 'evpn_tma_' + path.replace(/\W+/g,'_') + '_' + id.length + '_' + simpleHash(id);
+}
+function simpleHash(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return (h>>>0).toString(36); }
+function readCache(path){
+  try {
+    const raw = localStorage.getItem(cacheKey(path));
+    if(!raw) return null;
+    const o = JSON.parse(raw);
+    if(!o || !o.ts || !o.data) return null;
+    if(Date.now() - o.ts > CACHE_TTL_MS) return { data: o.data, stale: true };
+    return { data: o.data, stale: false };
+  } catch(e){ return null; }
+}
+function writeCache(path, data){
+  try { localStorage.setItem(cacheKey(path), JSON.stringify({ ts: Date.now(), data })); } catch(e){}
+}
+async function api(path, opts={}) {
+  try {
+    const r = await fetch('/api/tma' + path, {
+      ...opts,
+      headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': initData, ...(opts.headers||{}) }
+    });
+    const t = await r.text();
+    try { return JSON.parse(t); } catch(e) { return { success:false, msg: t || ('HTTP '+r.status) }; }
+  } catch(e) {
+    return { success:false, msg: 'خطای شبکه' };
+  }
+}
+function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function human(n){ n=Number(n)||0; if(n<1024) return n+' B'; const u=['KB','MB','GB','TB']; let i=-1,f=n; while(f>=1024&&i<u.length-1){f/=1024;i++} return f.toFixed(2)+' '+u[i]; }
+function healthColor(c){
+  const m={green:'#34d399',teal:'#2dd4bf',amber:'#fbbf24',orange:'#fb923c',red:'#fb7185',gray:'#94a3b8'};
+  return m[c]||m.gray;
+}
+function renderHealthScore(h){
+  const ring=document.getElementById('healthRing');
+  const scoreEl=document.getElementById('healthScoreTxt');
+  const labelEl=document.getElementById('healthLabel');
+  const sumEl=document.getElementById('healthSummary');
+  const facEl=document.getElementById('healthFactors');
+  if(!ring||!scoreEl) return;
+  if(!h){
+    ring.style.setProperty('--hp','0');
+    ring.style.setProperty('--hc', healthColor('gray'));
+    scoreEl.textContent='—';
+    if(labelEl) labelEl.textContent='نامشخص';
+    if(sumEl) sumEl.textContent='داده‌ای برای امتیازدهی نیست';
+    if(facEl) facEl.innerHTML='';
+    return;
+  }
+  const sc=Math.max(0,Math.min(100, Number(h.score)||0));
+  ring.style.setProperty('--hp', String(sc));
+  ring.style.setProperty('--hc', healthColor(h.color));
+  scoreEl.textContent=sc;
+  if(labelEl) labelEl.textContent=(h.label||'')+' · '+sc+'/100';
+  if(sumEl) sumEl.textContent=h.summary||'';
+  if(facEl){
+    const factors=h.factors||[];
+    facEl.innerHTML=factors.map(f=>`<div class="health-factor"><span>${esc(f.label)} · ${f.score}</span><span class="d">${esc(f.detail||'')}</span></div>`).join('');
+  }
+}
+
+function tab(name){
+  ['home','shop','wallet','devices','backup','speed','invite','gift'].forEach(t=>{
+    const el=document.getElementById('v-'+t);
+    if(el) el.classList.toggle('hidden', t!==name);
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on', b.dataset.t===name));
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('on', b.dataset.t===name));
+  const morePanel=document.getElementById('moreSheet');
+  if(morePanel) morePanel.classList.toggle('open', ['backup','speed','invite','gift'].includes(name));
+  if(name==='backup') loadBackupStatus();
+  if(name==='speed' && !window._speedLoaded) { window._speedLoaded=true; /* targets lazy on button */ }
+  if(name==='home') loadUsageChart();
+  if(name==='invite') loadInvite();
+  if(name==='gift') loadGifts();
+  if(name==='devices'){ renderDeviceProfiles([]); loadConfigLabels(); }
+  if(name==='wallet'){ loadWallet(); loadOrders(); refreshPinStatus(); }
+}
+let pinUnlocked = false;
+function pinSessionKey(){
+  try{
+    const id = (initData||'anon').slice(0,48);
+    return 'evpn_pin_ok_'+simpleHash(id);
+  }catch(e){ return 'evpn_pin_ok'; }
+}
+function isPinSessionUnlocked(){
+  try{ return sessionStorage.getItem(pinSessionKey())==='1'; }catch(e){ return pinUnlocked; }
+}
+function setPinSessionUnlocked(v){
+  pinUnlocked = !!v;
+  try{
+    if(v) sessionStorage.setItem(pinSessionKey(),'1');
+    else sessionStorage.removeItem(pinSessionKey());
+  }catch(e){}
+}
+async function ensurePinGate(){
+  if(isPinSessionUnlocked()) return true;
+  if(!initData) return true; // outside telegram: no lock
+  const d = await api('/pin/status');
+  if(!d.success || !(d.obj&&d.obj.enabled)) return true;
+  const lock = document.getElementById('pinLock');
+  if(lock) lock.classList.remove('hidden');
+  const appRoot = document.querySelector('.app') || document.querySelector('header');
+  // hide main content visually while locked
+  document.body.classList.add('pin-locked');
+  return false;
+}
+async function submitPinUnlock(){
+  const inp = document.getElementById('pinUnlockInput');
+  const err = document.getElementById('pinUnlockErr');
+  const pin = (inp&&inp.value||'').trim();
+  if(err) err.textContent='';
+  const d = await api('/pin/verify',{method:'POST',body:JSON.stringify({pin})});
+  if(!d.success){
+    if(err) err.textContent = d.msg||'رمز نادرست';
+    if(inp){ inp.value=''; inp.focus(); }
+    return;
+  }
+  setPinSessionUnlocked(true);
+  const lock = document.getElementById('pinLock');
+  if(lock) lock.classList.add('hidden');
+  document.body.classList.remove('pin-locked');
+  await load(true);
+}
+async function refreshPinStatus(){
+  const d = await api('/pin/status');
+  const en = !!(d.success && d.obj && d.obj.enabled);
+  const lab = document.getElementById('pinStatusLabel');
+  if(lab) lab.textContent = en ? 'فعال 🔒' : 'خاموش';
+  const cur = document.getElementById('pinCurrent');
+  if(cur) cur.classList.toggle('hidden', !en);
+  const dis = document.getElementById('pinDisableBtn');
+  if(dis) dis.classList.toggle('opacity-40', !en);
+}
+async function savePin(){
+  const a = (document.getElementById('pinNew')||{}).value||'';
+  const b = (document.getElementById('pinNew2')||{}).value||'';
+  const cur = (document.getElementById('pinCurrent')||{}).value||'';
+  if(a!==b){ tg?.showAlert?.('تکرار رمز یکسان نیست'); return; }
+  const body = {pin:a.trim(), newPin:a.trim(), currentPin:cur.trim()};
+  const d = await api('/pin/set',{method:'POST',body:JSON.stringify(body)});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  tg?.showAlert?.(d.obj?.message||'قفل فعال شد');
+  setPinSessionUnlocked(true);
+  ['pinNew','pinNew2','pinCurrent'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  refreshPinStatus();
+}
+async function disablePin(){
+  const cur = (document.getElementById('pinCurrent')||{}).value||'';
+  if(!cur){ tg?.showAlert?.('رمز فعلی را وارد کنید'); return; }
+  if(!confirm('قفل مینی‌اپ خاموش شود؟')) return;
+  const d = await api('/pin/disable',{method:'POST',body:JSON.stringify({pin:cur, currentPin:cur})});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  tg?.showAlert?.('قفل برداشته شد');
+  setPinSessionUnlocked(true);
+  const el=document.getElementById('pinCurrent'); if(el) el.value='';
+  refreshPinStatus();
+}
+
+async function load(skipPin){
+  if(!skipPin){
+    const ok = await ensurePinGate();
+    if(!ok) return;
+  }
+  // Paint cached snapshot immediately for zero perceived latency.
+  const cached = readCache('/dashboard');
+  if(cached && cached.data){
+    try { await applyDashboard(cached.data); } catch(e){}
+  }
+  const d = await api('/dashboard');
+  if(!d.success){
+    if(!cached){
+      document.getElementById('subLine').textContent=(d.msg||'از داخل تلگرام باز کنید');
+      if(d.msg) alert(d.msg);
+    }
+    return;
+  }
+  writeCache('/dashboard', d.obj);
+  await applyDashboard(d.obj);
+}
+async function applyDashboard(payload){
+  data = payload;
+  document.getElementById('subLine').textContent = data.hasClient ? (data.subscriptionName||data.email||data.subId) : 'بدون اشتراک';
+  const bal = Number(data.walletBalance||data.wallet||0);
+  const balTxt = bal.toLocaleString('fa-IR') + ' تومان';
+  const hw = document.getElementById('homeWalletBal'); if(hw) hw.textContent = balTxt;
+  const hb = document.getElementById('headerWalletBal'); if(hb) hb.textContent = bal.toLocaleString('fa-IR') + ' ت';
+  const wb = document.getElementById('walletBal'); if(wb) wb.textContent = balTxt;
+  renderHealthScore(data.health);
+  const used=data.usedBytes||0, limit=(data.trafficLimitBytes>0)?data.trafficLimitBytes:(data.totalGB>0?data.totalGB*1024**3:0);
+  const trafficP = limit ? Math.min(100, used/limit*100) : 0;
+  document.getElementById('usageBar').style.width = trafficP + '%';
+  document.getElementById('trafficRing').style.setProperty('--p', trafficP.toFixed(1));
+  document.getElementById('trafficPct').textContent = trafficP.toFixed(0) + '%';
+  document.getElementById('usedTxt').textContent = human(used);
+  document.getElementById('limitTxt').textContent = data.quotaLabel || (data.totalGB ? data.totalGB + ' GB' : 'نامحدود');
+  document.getElementById('upTxt').textContent = human(data.up);
+  document.getElementById('downTxt').textContent = human(data.down);
+  let daysLeft = null, daysP = 0;
+  if (data.expiryTime) {
+    const ms = data.expiryTime - Date.now();
+    daysLeft = Math.max(0, Math.ceil(ms / 86400000));
+    // assume ~30 day cycle for ring fill of remaining
+    daysP = Math.min(100, (daysLeft / 30) * 100);
+    document.getElementById('expTxt').textContent = new Date(data.expiryTime).toLocaleString('fa-IR') + ' (' + daysLeft + ' روز)';
+    document.getElementById('daysPct').textContent = daysLeft + 'ر';
+  } else {
+    document.getElementById('expTxt').textContent = '∞';
+    document.getElementById('daysPct').textContent = '∞';
+    daysP = 100;
+  }
+  document.getElementById('daysRing').style.setProperty('--p', daysP.toFixed(1));
+  document.getElementById('linkBox').textContent=data.shareLink||'—';
+  const plans=document.getElementById('plans'); plans.innerHTML='';
+  const sel=document.getElementById('renewPlan'); const ar=document.getElementById('arPlan');
+  sel.innerHTML=''; ar.innerHTML='';
+  (data.plans||[]).forEach(p=>{
+    const el=document.createElement('div');
+    el.className='card p-3 flex justify-between items-center gap-2';
+    el.innerHTML=`<div><div class="font-medium text-sm">${esc(p.name)}</div><div class="text-[10px] opacity-60">${p.totalGB||'∞'}GB · ${p.durationDays}روز</div></div>
+      <div class="text-left"><div class="text-sky-300 text-sm">${Number(p.priceToman).toLocaleString('fa-IR')} ت</div>
+      <button class="btn btn-p text-xs mt-1 py-1">خرید از کیف پول</button></div>`;
+    el.querySelector('button').onclick=()=>buy(p.id);
+    plans.appendChild(el);
+    const o=document.createElement('option'); o.value=p.id; o.textContent=p.name+' · '+Number(p.priceToman).toLocaleString('fa-IR')+' ت';
+    sel.appendChild(o.cloneNode(true)); ar.appendChild(o);
+  });
+  const lim = data.deviceLimit||data.maxActiveSessions||0;
+  const act = data.activeDevices||0;
+  const head=document.getElementById('deviceLimitLine');
+  if(head){ head.textContent = lim>0 ? (`فعال ${act} از ${lim}`) : (`فعال ${act} · بدون سقف`); }
+  await renderDeviceProfiles(data.devices||[]);
+  await loadWallet();
+}
+
+
+const CONFIG_LABEL_PRESETS=['موبایل','لپ‌تاپ','تبلت','تلویزیون','روتر','محل کار','خانه'];
+async function loadConfigLabels(){
+  const box=document.getElementById('configLabels');
+  if(!box) return;
+  box.innerHTML='<div class="opacity-50 text-center py-2">در حال بارگذاری…</div>';
+  const d=await api('/configs');
+  if(!d.success){
+    box.innerHTML='<div class="opacity-60 text-center py-2">'+(d.msg||'خطا')+'</div>';
+    return;
+  }
+  const rows=(d.obj&&d.obj.configs)||[];
+  if(!rows.length){
+    box.innerHTML='<div class="opacity-50 text-center py-3">هنوز کانفیگی ندارید — بعد از خرید اینجا می‌آید</div>';
+    return;
+  }
+  box.innerHTML='';
+  rows.forEach(cfg=>{
+    const el=document.createElement('div');
+    el.className='rounded-xl p-3 border border-white/10 bg-white/5 space-y-2';
+    const stMap={active:'فعال',disabled:'خاموش',expired:'منقضی',quota:'اتمام حجم'};
+    const st=stMap[cfg.status]||cfg.status||'—';
+    const presets=CONFIG_LABEL_PRESETS.map(n=>`<button type="button" class="text-[10px] px-2 py-0.5 rounded-full bg-white/10" data-cp="${esc(n)}">${esc(n)}</button>`).join('');
+    el.innerHTML=`<div class="flex justify-between gap-2 text-[10px] opacity-60">
+        <span dir="ltr">${esc(cfg.email||cfg.subId||('#'+cfg.id))}</span>
+        <span>${esc(st)}</span>
+      </div>
+      <input class="w-full rounded-lg bg-white/10 px-2 py-1.5 text-sm" value="${esc(cfg.subscriptionName||cfg.label||'')}" placeholder="نام شخصی کانفیگ" data-clabel maxlength="48"/>
+      <div class="flex flex-wrap gap-1">${presets}</div>
+      <button type="button" class="btn btn-p w-full text-xs py-1.5" data-csave>ذخیره نام کانفیگ</button>`;
+    el.querySelectorAll('[data-cp]').forEach(b=>{
+      b.onclick=()=>{ const inp=el.querySelector('[data-clabel]'); if(inp) inp.value=b.getAttribute('data-cp')||''; };
+    });
+    el.querySelector('[data-csave]').onclick=async()=>{
+      const label=(el.querySelector('[data-clabel]').value||'').trim();
+      if(!label) return tg?.showAlert?.('نام را وارد کنید');
+      const r=await api('/configs/'+cfg.id+'/label',{method:'POST',body:JSON.stringify({label})});
+      if(!r.success) return tg?.showAlert?.(r.msg||'خطا');
+      tg?.showAlert?.('نام کانفیگ ذخیره شد');
+      // refresh home subLine if this is primary
+      try{ await load(); }catch(e){}
+    };
+    box.appendChild(el);
+  });
+}
+
+const PROFILE_OPTS=[
+  {key:'ios',label:'🍎 iOS'},{key:'android',label:'🤖 اندروید'},{key:'windows',label:'🪟 ویندوز'},
+  {key:'macos',label:'💻 مک'},{key:'linux',label:'🐧 لینوکس'},{key:'tv',label:'📺 TV'},
+  {key:'router',label:'📡 روتر'},{key:'other',label:'📱 سایر'}
+];
+async function renderDeviceProfiles(fallbackDevices){
+  const chips=document.getElementById('profileChips');
+  const dev=document.getElementById('devices');
+  if(dev) dev.innerHTML='';
+  let profiles=[], devices=fallbackDevices||[], subUrl='';
+  try{
+    const b=await api('/profiles/bundle');
+    if(b.success){
+      profiles=b.obj.profiles||[];
+      devices=b.obj.devices||devices;
+      subUrl=b.obj.subUrl||'';
+    }
+  }catch(e){}
+  if(chips){
+    chips.innerHTML='';
+    (profiles.length?profiles:PROFILE_OPTS.map(p=>({key:p.key,label:p.label,icon:''}))).forEach(p=>{
+      const s=document.createElement('span');
+      s.className='pill text-[10px]';
+      s.textContent=(p.icon||'')+' '+(p.label||p.key);
+      chips.appendChild(s);
+    });
+  }
+  if(!devices.length){
+    if(dev) dev.innerHTML='<div class="opacity-50 text-center py-4">هنوز دستگاهی ثبت نشده — بعد از اتصال کلاینت اینجا می‌آید</div>';
+    return;
+  }
+  devices.forEach(d=>{
+    const el=document.createElement('div');
+    el.className='card p-3 space-y-2';
+    const st = d.revoked || !d.active ? '<span class="text-rose-400">قطع‌شده</span>' : (d.isStale?'<span class="text-amber-300">غیرفعال</span>':'<span class="text-emerald-400">آنلاین</span>');
+    const when = d.lastSeenAt ? new Date(d.lastSeenAt).toLocaleString('fa-IR') : '—';
+    const opts=PROFILE_OPTS.map(p=>`<option value="${p.key}" ${(d.profileKey===p.key)?'selected':''}>${p.label}</option>`).join('');
+    const presets=['موبایل','لپ‌تاپ','تبلت','تلویزیون','روتر','محل کار'];
+    const presetHtml=presets.map(n=>`<button type="button" class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10" data-preset="${esc(n)}">${esc(n)}</button>`).join('');
+    el.innerHTML=`<div class="flex justify-between gap-2">
+      <div class="min-w-0 flex-1">
+        <input class="w-full rounded-lg bg-white/10 px-2 py-1 text-sm mb-1" value="${esc(d.name||d.model||'')}" placeholder="نام شخصی دستگاه (مثلاً موبایل من)" data-name maxlength="48"/>
+        <div class="flex flex-wrap gap-1 mb-1">${presetHtml}</div>
+        <div class="text-[10px] opacity-60">${esc(d.os||'')} ${esc(d.osVersion||'')} · ${st}</div>
+        <div class="text-[10px] opacity-50">آخرین بازدید: ${when}</div>
+      </div>
+      ${(!d.revoked && d.active) ? '<button type="button" class="btn btn-g text-[10px] py-1 shrink-0 h-fit" data-rev>قطع</button>' : ''}
+    </div>
+    <div class="flex gap-2 items-center">
+      <select class="flex-1 rounded-lg bg-white/10 p-1.5 text-[11px]" data-prof>${opts}</select>
+      <button type="button" class="btn btn-p text-[10px] py-1" data-save>ذخیره نام</button>
+    </div>
+    ${subUrl?`<div class="text-[10px] opacity-50 break-all" dir="ltr">ساب: ${esc(subUrl)} · پروفایل: <b data-pk>${esc(d.profileKey||'—')}</b></div>`:''}`;
+    const save=el.querySelector('[data-save]');
+    const rev=el.querySelector('[data-rev]');
+    el.querySelectorAll('[data-preset]').forEach(btn=>{
+      btn.onclick=()=>{ const inp=el.querySelector('[data-name]'); if(inp) inp.value=btn.getAttribute('data-preset')||''; };
+    });
+    if(save) save.onclick=async()=>{
+      const name=el.querySelector('[data-name]').value.trim();
+      const profileKey=el.querySelector('[data-prof]').value;
+      if(!name){ return tg?.showAlert?.('یک نام برای دستگاه بنویسید'); }
+      const r=await api('/devices/'+d.id+'/profile',{method:'POST',body:JSON.stringify({profileKey,name})});
+      if(!r.success) return tg?.showAlert?.(r.msg||'خطا');
+      const pk=el.querySelector('[data-pk]'); if(pk) pk.textContent=profileKey;
+      tg?.showAlert?.('نام دستگاه ذخیره شد');
+    };
+    if(rev) rev.onclick=async()=>{ if(!confirm('قطع این دستگاه؟'))return; const r=await api('/devices/'+d.id+'/revoke',{method:'POST',body:'{}'}); if(!r.success) return tg?.showAlert?.(r.msg||'خطا'); load(); };
+    dev.appendChild(el);
+  });
+}
+
+async function loadWallet(){
+  const d=await api('/wallet'); if(!d.success) return;
+  const bal=Number(d.obj.balance||0);
+  const balTxt=bal.toLocaleString('fa-IR')+' تومان';
+  document.getElementById('walletBal').textContent=balTxt;
+  const hw=document.getElementById('homeWalletBal'); if(hw) hw.textContent=balTxt;
+  const hb=document.getElementById('headerWalletBal'); if(hb) hb.textContent=bal.toLocaleString('fa-IR')+' ت';
+  document.getElementById('arState').textContent=d.obj.autoRenew?'روشن':'خاموش';
+  const led=document.getElementById('ledger'); led.innerHTML='';
+  (d.obj.ledger||[]).forEach(x=>{
+    const el=document.createElement('div');
+    el.className='flex justify-between border-b border-white/5 py-1';
+    el.innerHTML=`<span>${esc(x.kind)}</span><span>${x.deltaToman>0?'+':''}${Number(x.deltaToman).toLocaleString('fa-IR')}</span>`;
+    led.appendChild(el);
+  });
+}
+
+function orderStatusLabel(st){
+  const s=String(st||'').toLowerCase();
+  if(s==='approved'||s==='paid'||s==='done'||s==='completed') return {t:'تأیید شده',c:'ok'};
+  if(s==='pending_payment') return {t:'در انتظار پرداخت',c:'wait'};
+  if(s==='pending_review') return {t:'در انتظار تأیید',c:'wait'};
+  if(s==='rejected') return {t:'رد شده',c:'bad'};
+  if(s==='cancelled'||s==='canceled') return {t:'لغو شده',c:'muted'};
+  return {t: st||'—', c:'muted'};
+}
+function orderKindLabel(k){
+  const s=String(k||'').toLowerCase();
+  if(s==='wallet_topup') return 'شارژ کیف پول';
+  if(s==='renew'||s==='upgrade') return 'تمدید / ارتقا';
+  if(s==='plan') return 'خرید پلن';
+  return k||'سفارش';
+}
+async function loadOrders(){
+  const box=document.getElementById('orderHistory');
+  if(!box) return;
+  box.innerHTML='<div class="opacity-50 text-center py-2">در حال بارگذاری…</div>';
+  const d=await api('/orders');
+  if(!d.success){
+    box.innerHTML='<div class="opacity-60 text-center py-2">'+(d.msg||'خطا در دریافت تاریخچه')+'</div>';
+    return;
+  }
+  const rows=(d.obj&&d.obj.orders)||[];
+  if(!rows.length){
+    box.innerHTML='<div class="opacity-50 text-center py-3">هنوز خریدی ثبت نشده</div>';
+    return;
+  }
+  box.innerHTML=rows.map(o=>{
+    const st=orderStatusLabel(o.status);
+    const when=o.createdAt? new Date(o.createdAt).toLocaleString('fa-IR'):'—';
+    const price=Number(o.priceToman||0).toLocaleString('fa-IR');
+    const disc=Number(o.discountToman||0);
+    const gb=o.totalGB>0?(o.totalGB+' GB'):(o.kind==='wallet_topup'?'—':'∞');
+    const days=o.durationDays? (o.durationDays+' روز'):'—';
+    const promo=o.promoCode? (' · کد '+esc(o.promoCode)):'';
+    const discLine=disc>0? (' · تخفیف '+disc.toLocaleString('fa-IR')+' ت'):'';
+    return `<div class="order-row">
+      <div class="top">
+        <div class="name">${esc(o.planName||orderKindLabel(o.kind))}</div>
+        <span class="order-st ${st.c}">${st.t}</span>
+      </div>
+      <div class="meta">
+        #${o.id} · ${orderKindLabel(o.kind)} · ${price} تومان${discLine}${promo}<br>
+        ${gb} · ${days} · ${when}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let activePromo='';
+async function applyPromoPreview(){
+  const code=(document.getElementById('promoInput').value||'').trim();
+  if(!code){ tg?.showAlert?.('کد را وارد کنید'); return; }
+  const d=await api('/promo/apply',{method:'POST',body:JSON.stringify({code, amountToman:100000})});
+  if(!d.success){
+    activePromo='';
+    document.getElementById('promoHint').textContent=d.msg||'نامعتبر';
+    document.getElementById('promoHint').className='text-[11px] text-red-400';
+    return;
+  }
+  activePromo=d.obj.code||code;
+  document.getElementById('promoHint').textContent='✅ '+activePromo+' · '+(d.obj.message||'اعمال می‌شود');
+  document.getElementById('promoHint').className='text-[11px] text-emerald-400';
+}
+async function buy(planId){
+  const code=activePromo||(document.getElementById('promoInput').value||'').trim();
+  const body={planId};
+  if(code) body.promoCode=code;
+  // Prefer instant wallet purchase; fall back messaging handled by modal.
+  const d=await api('/shop/buy-wallet',{method:'POST',body:JSON.stringify(body)});
+  if(!d.success){
+    if(d.code==='insufficient_balance' || (d.msg||'').includes('موجودی کافی نیست')){
+      openTmaModal('warn','موجودی کافی نیست','موجودی شما برای خرید این طرح کافی نیست. ابتدا کیف پول خود را شارژ کنید.','wallet');
+      return;
+    }
+    return tg?.showAlert?.(d.msg||'خطا');
+  }
+  const planName=(d.obj&&d.obj.planName)||'پلن';
+  const email=(d.obj&&d.obj.email)||'';
+  window._justPurchased={ email:email, subId:(d.obj&&d.obj.subId)||'', clientId:(d.obj&&d.obj.clientId)||0, planName:planName };
+  openTmaModal('success','خرید با موفقیت فعال شد','خرید شما با موفقیت فعال شد.'+(email?'\nکانفیگ: '+email:'')+'\nبا تأیید به صفحه کانفیگ‌ها می‌روید.','home');
+}
+async function buyCard(planId){
+  // Optional card-to-card path (kept for fallback)
+  const code=activePromo||(document.getElementById('promoInput').value||'').trim();
+  const body={planId};
+  if(code) body.promoCode=code;
+  const d=await api('/shop/buy',{method:'POST',body:JSON.stringify(body)});
+  if(!d.success) return tg?.showAlert?.(d.msg||'خطا');
+  showPay(d.obj);
+  let msg='سفارش ثبت شد.';
+  if(d.obj.discountToman) msg+=' تخفیف '+Number(d.obj.discountToman).toLocaleString('fa-IR')+' ت';
+  tg?.showAlert?.(msg+' رسید را در ربات بفرستید.');
+}
+async function topup(amount){
+  const d=await api('/wallet/topup',{method:'POST',body:JSON.stringify({amountToman:amount})});
+  if(!d.success) return tg?.showAlert?.(d.msg||'خطا');
+  showPay(d.obj);
+  tab('shop');
+}
+function showPay(o){
+  document.getElementById('payPanel').classList.remove('hidden');
+  document.getElementById('payAmount').textContent=Number(o.priceToman||o.amountToman||0).toLocaleString('fa-IR');
+  lastCard=o.cardNumber||'';
+  document.getElementById('payCard').textContent=lastCard||'—';
+  document.getElementById('payHolder').textContent=o.cardHolder||'';
+  document.getElementById('payInst').textContent=o.instructions||o.hint||'';
+  tab('shop');
+}
+function copyCard(){ if(lastCard) navigator.clipboard?.writeText(lastCard.replace(/\\s/g,'')); tg?.showAlert?.('کپی شد'); }
+async function tmaCopyText(text){
+  text = String(text||'');
+  if(!text) return false;
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  }catch(e){}
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.setAttribute('readonly','');
+    ta.style.position='fixed'; ta.style.top='-9999px';
+    document.body.appendChild(ta); ta.select();
+    const ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }catch(e){ return false; }
+}
+function buildSmartConfigText(){
+  if(!data || !data.hasClient) return '';
+  const name = (data.subscriptionName||data.email||data.subId||'اشتراک').trim();
+  let exp = 'نامحدود';
+  if(data.expiryTime){
+    try{ exp = new Date(data.expiryTime).toLocaleString('fa-IR'); }catch(e){ exp = String(data.expiryTime); }
+  }
+  const link = data.shareLink || '';
+  const sub = data.subId || '';
+  const quota = data.quotaLabel || (data.totalGB ? (data.totalGB+' GB') : 'نامحدود');
+  const lines = [];
+  lines.push('📱 '+name);
+  lines.push('📅 انقضا: '+exp);
+  lines.push('📦 حجم: '+quota);
+  if(sub) lines.push('🆔 Sub: '+sub);
+  if(link){ lines.push(''); lines.push('🔗 لینک اتصال:'); lines.push(link); }
+  lines.push('');
+  lines.push('— ELECTRUVPN');
+  return lines.join('\n');
+}
+function copyLink(){
+  if(!data?.shareLink){ tg?.showAlert?.('لینکی برای کپی نیست'); return; }
+  tmaCopyText(data.shareLink).then(ok=> tg?.showAlert?.(ok?'لینک کپی شد':'کپی نشد — دستی انتخاب کنید'));
+}
+function copySmartConfig(){
+  const text = buildSmartConfigText();
+  if(!text){ tg?.showAlert?.('اشتراکی برای کپی نیست'); return; }
+  const prev=document.getElementById('smartCopyPreview');
+  if(prev){ prev.textContent=text; prev.classList.remove('hidden'); }
+  tmaCopyText(text).then(ok=> tg?.showAlert?.(ok?'کپی هوشمند انجام شد (نام + انقضا + لینک)':'کپی نشد'));
+}
+
+function showQR(){
+  const c=document.getElementById('qr'); if(!data?.shareLink) return;
+  c.classList.remove('hidden');
+  const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,200,200);
+  ctx.fillStyle='#000'; ctx.font='10px monospace';
+  const s=data.shareLink; for(let i=0;i<s.length;i+=28) ctx.fillText(s.substr(i,28),8,20+i/28*12);
+}
+async function renewWallet(){
+  const planId=Number(document.getElementById('renewPlan').value||0);
+  const d=await api('/renew',{method:'POST',body:JSON.stringify({planId})});
+  if(!d.success){
+    if((d.code==='insufficient_balance') || (d.msg||'').includes('موجودی کافی نیست')){
+      openTmaModal('warn','موجودی کافی نیست','موجودی شما برای خرید این طرح کافی نیست. ابتدا کیف پول خود را شارژ کنید.','wallet');
+      return;
+    }
+    return tg?.showAlert?.(d.msg||'خطا');
+  }
+  window._justPurchased={ email:(d.obj&&d.obj.email)||'', subId:(d.obj&&d.obj.subId)||'', clientId:0, planName:'تمدید' };
+  openTmaModal('success','خرید با موفقیت فعال شد','تمدید/خرید شما با موفقیت از کیف پول فعال شد. با تأیید، کانفیگ‌هایتان را ببینید.','home');
+}
+function openTmaModal(kind,title,msg,next){
+  const backdrop=document.getElementById('tmaModal');
+  const card=document.getElementById('tmaModalCard');
+  if(!backdrop||!card) return;
+  card.classList.remove('success','warn');
+  card.classList.add(kind==='success'?'success':'warn');
+  document.getElementById('tmaModalIco').textContent = kind==='success' ? '✓' : '⚠';
+  document.getElementById('tmaModalTitle').textContent = title;
+  document.getElementById('tmaModalMsg').textContent = msg;
+  window._tmaModalNext = next || 'home';
+  backdrop.classList.remove('hidden');
+}
+function closeTmaModal(){
+  const backdrop=document.getElementById('tmaModal');
+  if(backdrop) backdrop.classList.add('hidden');
+}
+async function onTmaModalConfirm(){
+  const next=window._tmaModalNext||'home';
+  closeTmaModal();
+  if(next==='wallet'){
+    tab('wallet');
+    try{ await loadWallet(); }catch(e){}
+    // focus topup area
+    const bal=document.getElementById('walletBal');
+    if(bal) bal.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  // success → home configs
+  tab('home');
+  await load();
+  highlightPurchasedConfig();
+}
+function highlightPurchasedConfig(){
+  const info=window._justPurchased;
+  const box=document.getElementById('linkBox');
+  const card=box ? box.closest('.card') : null;
+  if(!card) return;
+  // inject / update badge
+  let badge=document.getElementById('newConfigBadge');
+  if(!badge){
+    badge=document.createElement('div');
+    badge.id='newConfigBadge';
+    badge.className='config-new-badge';
+    card.insertBefore(badge, card.firstChild);
+  }
+  const label = (info && info.email) ? ('کانفیگ جدید شما · ' + info.email) : 'کانفیگ تازه‌خریداری‌شده';
+  badge.textContent = '✨ ' + label;
+  card.classList.add('config-highlight');
+  card.scrollIntoView({behavior:'smooth',block:'center'});
+  // soft clear highlight after a while
+  setTimeout(()=>{ card.classList.remove('config-highlight'); }, 12000);
+}
+async function setAR(on){
+  const planId=Number(document.getElementById('arPlan').value||0);
+  const d=await api('/autorenew',{method:'POST',body:JSON.stringify({enabled:on,planId})});
+  if(!d.success) return tg?.showAlert?.(d.msg||'خطا');
+  tg?.showAlert?.(on?'تمدید خودکار روشن':'خاموش شد'); loadWallet();
+}
+async function revokeAll(){
+  if(!confirm('قطع همه دستگاه‌ها و صدور کلید جدید؟\nتأیید نهایی در چت ربات انجام می‌شود.')) return;
+  const d=await api('/devices/revoke-all',{method:'POST',body:'{}'});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  tg?.showAlert?.(d.obj?.message||'تأیید را در چت ربات بزنید');
+}
+async function resetUUID(){
+  if(!confirm('صدور کلید جدید؟\nتأیید نهایی در چت ربات انجام می‌شود.')) return;
+  const d=await api('/reset-uuid',{method:'POST',body:'{}'});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  tg?.showAlert?.(d.obj?.message||'تأیید را در چت ربات بزنید');
+}
+
+let lastBackupCode='';
+async function loadBackupStatus(){
+  const st=document.getElementById('backupStatus');
+  const rev=document.getElementById('revokeBtn');
+  try{
+    const d=await api('/backup/status');
+    if(!d.success){ st.textContent='خطا در دریافت وضعیت'; return; }
+    const o=d.obj||{};
+    if(o.hasActive){
+      st.innerHTML=`کد فعال: <b dir="ltr">${esc(o.codeMasked||'—')}</b><br>`+
+        `📦 ${o.clientCount||0} اکانت · 💰 ${(o.wallet||0).toLocaleString('fa-IR')} تومان<br>`+
+        (o.daysLeft!=null?`⏱ ${o.daysLeft} روز مانده تا انقضا`:'');
+      rev.style.display='block';
+    }else{
+      st.textContent='هنوز کد پشتیبان فعالی ندارید. با دکمه زیر کد بسازید.';
+      rev.style.display='none';
+    }
+  }catch(e){ st.textContent='خطا در ارتباط'; }
+}
+async function createBackup(){
+  const d=await api('/backup/create',{method:'POST',body:'{}'});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  const o=d.obj||{};
+  lastBackupCode=o.code||'';
+  document.getElementById('codeCard').classList.remove('hidden');
+  document.getElementById('codeDisplay').textContent=lastBackupCode;
+  const s=o.summary||{};
+  let sum=`📦 ${s.clientCount||0} اکانت`;
+  if(s.wallet) sum+=` · 💰 ${Number(s.wallet).toLocaleString('fa-IR')} تومان`;
+  if(s.orderCount) sum+=` · 🧾 ${s.orderCount} سفارش`;
+  if(o.ttlDays) sum+=` · اعتبار ${o.ttlDays} روز`;
+  document.getElementById('codeSummary').textContent=sum;
+  document.getElementById('codeWarning').textContent=o.warning||'⚠️ این کد را در جای امن نگه دارید.';
+  document.getElementById('restoreResult').classList.add('hidden');
+  loadBackupStatus();
+  tg?.showAlert?.('کد پشتیبان ساخته شد — آن را کپی و در جای امن ذخیره کنید');
+}
+function copyBackupCode(){
+  if(!lastBackupCode) return;
+  navigator.clipboard?.writeText(lastBackupCode);
+  tg?.showAlert?.('کد کپی شد');
+}
+async function restoreBackup(){
+  const code=(document.getElementById('restoreCode').value||'').trim();
+  if(!code){ tg?.showAlert?.('کد را وارد کنید'); return; }
+  if(!confirm('بازیابی انجام شود؟ اکانت‌های قبلی این تلگرام با داده‌های کد جایگزین می‌شوند.')) return;
+  const d=await api('/backup/restore',{method:'POST',body:JSON.stringify({code})});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  const o=d.obj||{};
+  const s=o.summary||{};
+  let html=`📦 <b>${s.clientCount||0}</b> اکانت بازیابی شد`;
+  if(s.clients&&s.clients.length){
+    html+='<ul class="mt-2 space-y-1">';
+    s.clients.forEach(c=>{ html+=`<li dir="ltr"><code>${esc(c.email||c.subId)}</code> · ${esc(c.status||'—')}</li>`; });
+    html+='</ul>';
+  }
+  if(s.wallet) html+=`<div class="mt-1">💰 کیف پول: ${Number(s.wallet).toLocaleString('fa-IR')} تومان</div>`;
+  document.getElementById('restoreSummary').innerHTML=html;
+  document.getElementById('restoreResult').classList.remove('hidden');
+  document.getElementById('restoreCode').value='';
+  loadBackupStatus();
+  tg?.showAlert?.(o.message||'بازیابی موفق');
+}
+async function revokeBackup(){
+  if(!confirm('کد فعلی باطل شود؟ دیگر نمی‌توان با آن بازیابی کرد.')) return;
+  const d=await api('/backup/revoke',{method:'POST',body:'{}'});
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  document.getElementById('codeCard').classList.add('hidden');
+  lastBackupCode='';
+  loadBackupStatus();
+  tg?.showAlert?.(d.obj?.message||'باطل شد');
+}
+
+/* ---- Usage analytics (day / week / month) ---- */
+let usageRange = 'week';
+async function loadUsageChart(range){
+  if(range) usageRange = range;
+  const box=document.getElementById('usageChart');
+  if(!box) return;
+  document.querySelectorAll('.range-tab').forEach(btn=>{
+    const on = btn.dataset.range === usageRange;
+    btn.className = 'range-tab px-3 py-1 rounded-lg text-xs ' + (on ? 'bg-indigo-500/80 font-semibold' : 'bg-white/10');
+  });
+  const left=document.getElementById('chartLeftLbl');
+  const right=document.getElementById('chartRightLbl');
+  if(left) left.textContent = usageRange==='day' ? '۲۴س قبل' : 'قدیمی‌تر';
+  if(right) right.textContent = usageRange==='day' ? 'الان' : 'امروز';
+  try{
+    const d=await api('/usage/history?range='+encodeURIComponent(usageRange));
+    if(!d.success || !d.obj?.hasClient){
+      box.innerHTML='<div class="text-xs opacity-50 w-full text-center self-center">پس از فعال‌سازی اشتراک، نمودار نمایش داده می‌شود</div>';
+      return;
+    }
+    const pts=d.obj.points||d.obj.days||[];
+    const peak=Math.max(d.obj.peakBytes||1, 1);
+    if(!pts.length){
+      box.innerHTML='<div class="text-xs opacity-50 w-full text-center self-center">هنوز نمونه مصرف ثبت نشده</div>';
+      return;
+    }
+    box.innerHTML='';
+    pts.forEach(p=>{
+      const h=Math.max(4, Math.round((p.total/peak)*100));
+      const col=document.createElement('div');
+      col.className='col';
+      const tip = human(p.total) + (p.up||p.down ? ' (↑'+human(p.up||0)+' ↓'+human(p.down||0)+')' : '');
+      col.innerHTML=`<div class="stem" style="height:${h}%" title="${tip}"></div><div class="lbl">${esc(p.label||'')}</div>`;
+      box.appendChild(col);
+    });
+    const peakEl=document.getElementById('chartPeak');
+    if(peakEl) peakEl.textContent='اوج: '+human(peak);
+    const dn=d.obj.dayNight||{};
+    const du=document.getElementById('dayUsage');
+    const nu=document.getElementById('nightUsage');
+    const dp=document.getElementById('dayPct');
+    const np=document.getElementById('nightPct');
+    if(du) du.textContent=human(dn.dayBytes||0);
+    if(nu) nu.textContent=human(dn.nightBytes||0);
+    if(dp) dp.textContent=(dn.dayPct!=null?Number(dn.dayPct).toFixed(0):'0')+'٪';
+    if(np) np.textContent=(dn.nightPct!=null?Number(dn.nightPct).toFixed(0):'0')+'٪';
+    const tot=document.getElementById('usageTotal');
+    const avg=document.getElementById('usageAvg');
+    if(tot) tot.textContent='مجموع: '+human(d.obj.totalBytes||0);
+    if(avg) avg.textContent='میانگین: '+human(d.obj.avgBytes||0);
+  }catch(e){
+    box.innerHTML='<div class="text-xs opacity-50 w-full text-center self-center">خطا در بارگذاری نمودار</div>';
+  }
+}
+document.getElementById('usageRangeTabs')?.addEventListener('click', (e)=>{
+  const btn=e.target.closest('.range-tab');
+  if(btn?.dataset?.range) loadUsageChart(btn.dataset.range);
+});
+
+/* ---- In-app speed / ping test (client-side RTT) ---- */
+
+async function measureDownloadMbps(){
+  const t0 = performance.now();
+  const r = await fetch('/api/tma/speedtest/payload', {
+    headers: {'X-Telegram-Init-Data': initData},
+    cache: 'no-store'
+  });
+  if(!r.ok) throw new Error('payload HTTP '+r.status);
+  const buf = await r.arrayBuffer();
+  const ms = Math.max(1, performance.now()-t0);
+  const bits = buf.byteLength * 8;
+  return (bits / (ms/1000)) / 1e6; // Mbps
+}
+
+async function measureOne(url, samples=3){
+  const times=[];
+  for(let i=0;i<samples;i++){
+    const t0=performance.now();
+    try{
+      const ctrl=new AbortController();
+      const to=setTimeout(()=>ctrl.abort(), 2800);
+      await fetch(url, {mode:'no-cors', cache:'no-store', signal:ctrl.signal});
+      clearTimeout(to);
+    }catch(_){ /* aborted / network — still record elapsed */ }
+    times.push(Math.round(performance.now()-t0));
+    await new Promise(r=>setTimeout(r, 60));
+  }
+  times.sort((a,b)=>a-b);
+  return times[0];
+}
+function pingClass(ms){
+  if(ms<0||ms>2500) return 'ping-bad';
+  if(ms<180) return 'ping-good';
+  if(ms<400) return 'ping-mid';
+  return 'ping-bad';
+}
+function pingLabel(ms){
+  if(ms<0||ms>=2800) return 'قطع';
+  if(ms<180) return 'عالی';
+  if(ms<400) return 'خوب';
+  if(ms<800) return 'متوسط';
+  return 'ضعیف';
+}
+async function runSpeedTest(){
+  const btn=document.getElementById('speedBtn');
+  const st=document.getElementById('speedStatus');
+  const list=document.getElementById('speedList');
+  const bestBox=document.getElementById('speedBest');
+  btn.disabled=true; btn.classList.add('pulse');
+  list.innerHTML='';
+  bestBox.classList.add('hidden');
+  st.textContent='سنجش سرعت دانلود…';
+  const dlEl=document.getElementById('dlMbps');
+  if(dlEl) dlEl.textContent='…';
+  try {
+    const mbps = await measureDownloadMbps();
+    if(dlEl) dlEl.textContent = mbps>=10 ? mbps.toFixed(0) : mbps.toFixed(1);
+  } catch(e) {
+    if(dlEl) dlEl.textContent='—';
+  }
+  st.textContent='دریافت لیست نودها…';
+  const td=await api('/speedtest/targets');
+  if(!td.success){ st.textContent=td.msg||'خطا'; btn.disabled=false; btn.classList.remove('pulse'); return; }
+  const targets=td.obj?.targets||[];
+  if(!targets.length){ st.textContent='نودی برای تست ثبت نشده'; btn.disabled=false; btn.classList.remove('pulse'); return; }
+
+  const results=[];
+  for(let i=0;i<targets.length;i++){
+    const t=targets[i];
+    st.textContent=`تست ${i+1}/${targets.length}: ${t.name}…`;
+    const ms=await measureOne(t.probeUrl||('https://'+t.host+'/'), 3);
+    const score=ms*(1+(t.loadPct||0)/100);
+    results.push({...t, latencyMs:ms, score});
+    const row=document.createElement('div');
+    row.className='ping-row';
+    row.innerHTML=`<div><div class="text-sm font-medium">${esc(t.name)}</div>
+      <div class="text-[10px] opacity-50" dir="ltr">${esc(t.host)}:${t.port||443}${t.healthy===false?' · ناسالم':''}</div></div>
+      <div class="text-left"><span class="ping-badge ${pingClass(ms)}">${ms>=2800?'—':ms+' ms'}</span>
+      <div class="text-[10px] opacity-60 mt-1">${pingLabel(ms)}${t.loadPct?(' · بار '+Math.round(t.loadPct)+'%'):''}</div></div>`;
+    list.appendChild(row);
+  }
+  results.sort((a,b)=>a.score-b.score);
+  const best=results.find(r=>r.latencyMs<2800)||results[0];
+  if(best){
+    bestBox.classList.remove('hidden');
+    document.getElementById('bestName').textContent='🏆 '+best.name;
+    document.getElementById('bestMeta').textContent=
+      (best.latencyMs>=2800?'بدون پاسخ':best.latencyMs+' ms')+
+      (best.loadPct?(' · بار سرور '+Math.round(best.loadPct)+'%'):'')+
+      ' · '+pingLabel(best.latencyMs);
+    const bp=document.getElementById('bestPing');
+    if(bp) bp.textContent = best.latencyMs>=2800 ? '—' : Math.round(best.latencyMs);
+  }
+  st.textContent='تمام — بهترین مسیر بر اساس پینگ شما + خلوتی سرور انتخاب شد';
+  btn.disabled=false; btn.classList.remove('pulse');
+}
+
+
+async function loadGifts(){
+  const d=await api('/gifts');
+  if(!d.success){ document.getElementById('giftPlans').innerHTML='خطا'; return; }
+  const o=d.obj||{};
+  const plans=document.getElementById('giftPlans'); plans.innerHTML='';
+  (o.plans||[]).forEach(p=>{
+    const el=document.createElement('div');
+    el.className='card p-3 flex justify-between items-center gap-2';
+    el.innerHTML=`<div><div class="font-medium text-sm">${esc(p.name)}</div><div class="text-[10px] opacity-60">${p.totalGB||'∞'}GB · ${p.durationDays}روز · ${Number(p.priceToman).toLocaleString('fa-IR')} ت</div></div>
+      <button class="btn btn-p text-[11px] py-1">خرید هدیه</button>`;
+    el.querySelector('button').onclick=()=>buyGift(p.id);
+    plans.appendChild(el);
+  });
+  const mine=document.getElementById('giftMine');
+  const rows=[...(o.bought||[]).map(g=>`خرید: <code>${esc(g.code)}</code> · ${esc(g.status)}`),
+              ...(o.redeemed||[]).map(g=>`فعال‌شده: <code>${esc(g.code)}</code>`)];
+  mine.innerHTML=rows.length?rows.join('<br>'):'هنوز کارتی ندارید';
+}
+async function buyGift(planId){
+  const d=await api('/gifts/buy',{method:'POST',body:JSON.stringify({planId})});
+  if(!d.success) return tg?.showAlert?.(d.msg||'خطا');
+  showPay(d.obj);
+  tab('shop');
+  tg?.showAlert?.('سفارش هدیه ثبت شد. رسید را در ربات بفرستید.');
+}
+async function redeemGift(){
+  const code=(document.getElementById('giftCodeIn').value||'').trim();
+  if(!code) return;
+  const d=await api('/gifts/redeem',{method:'POST',body:JSON.stringify({code})});
+  document.getElementById('giftRedeemMsg').textContent=d.success?(d.obj.message||'فعال شد'):(d.msg||'خطا');
+  if(d.success){ tg?.showAlert?.('کارت هدیه فعال شد'); load(); loadGifts(); }
+}
+
+function deviceFingerprint(){
+  try{
+    const parts=[
+      navigator.userAgent||'',
+      navigator.language||'',
+      (screen.width+'x'+screen.height+'x'+(screen.colorDepth||0)),
+      String(new Date().getTimezoneOffset()),
+      navigator.hardwareConcurrency||'',
+      navigator.platform||''
+    ];
+    let h=0; const s=parts.join('|');
+    for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; }
+    const id='d'+(h>>>0).toString(36);
+    try{ localStorage.setItem('evpn_device_fp', id); }catch(e){}
+    return id;
+  }catch(e){
+    try{ return localStorage.getItem('evpn_device_fp')||'unknown'; }catch(_){ return 'unknown'; }
+  }
+}
+async function claimTrial(){
+  if(!confirm('تست رایگان فعال شود؟ (هر اکانت فقط یک‌بار)')) return;
+  const fp=deviceFingerprint();
+  const d=await api('/trial',{
+    method:'POST',
+    body:JSON.stringify({deviceFp:fp}),
+    headers:{'X-Device-Fingerprint':fp}
+  });
+  if(!d.success){ tg?.showAlert?.(d.msg||'خطا'); return; }
+  tg?.showAlert?.(d.obj?.message||'تست فعال شد');
+  load();
+}
+let inviteLinkCache='';
+async function loadInvite(){
+  const d=await api('/referral');
+  if(!d.success){ document.getElementById('inviteLink').textContent='خطا'; return; }
+  const o=d.obj||{};
+  if(!o.enabled){
+    document.getElementById('inviteDesc').textContent='سیستم دعوت فعلاً توسط ادمین خاموش است.';
+    document.getElementById('inviteLink').textContent='—';
+    return;
+  }
+  document.getElementById('inviteDesc').textContent=
+    o.percent>0?(`با هر خرید دوست‌تان ${o.percent}٪ به کیف پول شما واریز می‌شود.`+(o.firstPurchaseOnly?' (فقط خرید اول)':'')):'پاداش نقدی ۰٪ — فقط ردیابی دعوت.';
+  inviteLinkCache=o.link||o.code||'';
+  document.getElementById('inviteLink').textContent=inviteLinkCache;
+  const s=o.stats||{};
+  document.getElementById('invCount').textContent=s.inviteCount||0;
+  document.getElementById('rewCount').textContent=s.rewardCount||0;
+  document.getElementById('rewSum').textContent=((s.totalEarned||0)/1).toLocaleString('fa-IR');
+}
+function copyInvite(){
+  if(!inviteLinkCache) return;
+  navigator.clipboard?.writeText(inviteLinkCache);
+  tg?.showAlert?.('لینک کپی شد');
+}
+
+load();
+loadUsageChart();
+
+function toggleMore(){
+  const sheet=document.getElementById('moreSheet');
+  if(!sheet) return;
+  const open=sheet.classList.toggle('open');
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('on', b.dataset.t==='more' && open));
+  if(open){
+    // scroll to more sheet
+    sheet.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+// Prefer Telegram theme colors when present
+try{
+  if(window.Telegram?.WebApp){
+    document.body.classList.add('tg-ready');
+    Telegram.WebApp.setHeaderColor('#070a12');
+    Telegram.WebApp.setBackgroundColor('#070a12');
+  }
+}catch(e){}
+</script>
+</body>
+</html>

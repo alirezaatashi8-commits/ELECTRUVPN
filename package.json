@@ -1,0 +1,12 @@
+{
+  "name": "electruvpn-web-assets",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "npm@11.6.2",
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  },
+  "scripts": {
+    "build:assets": "bash scripts/build-assets.sh"
+  }
+}

@@ -1,0 +1,6 @@
+.git
+.github
+node_modules
+*.zip
+web/assets/vendor
+scripts/__pycache__

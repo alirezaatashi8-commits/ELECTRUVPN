@@ -1,0 +1,11 @@
+[Unit]
+Description=Run ELECTRUVPN daily security and privacy regression audit
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+RandomizedDelaySec=15m
+Unit=electruvpn-security-audit.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,17 @@
+[Unit]
+Description=ELECTRUVPN geoip/geosite data update
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+EnvironmentFile=-/etc/electruvpn/electruvpn.env
+ExecStart=/opt/electruvpn/geo-update.sh update
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ReadWritePaths=-/usr/local/share/xray -/run
+ReadOnlyPaths=/opt/electruvpn
+TimeoutStartSec=15min

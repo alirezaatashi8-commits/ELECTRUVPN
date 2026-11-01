@@ -1,0 +1,5 @@
+[Definition]
+# ELECTRUVPN uses slog JSON. Match only the authentication-failure event and
+# extract the structured IP field so fail2ban remains compatible with JSON logs.
+failregex = ^.*"msg":"authentication failure".*"ip":"<HOST>".*$
+ignoreregex =

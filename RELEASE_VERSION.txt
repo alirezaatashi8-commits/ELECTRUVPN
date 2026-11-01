@@ -1,0 +1,1 @@
+ELECTRUVPN BETA1.22 — Release source manifest + OpenAPI + gofmt + .env.example completeness (2026-10-31)
